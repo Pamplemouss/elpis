@@ -69,10 +69,12 @@ export default function Task(props) {
                         <i className={"icon fa-solid text-xl " + ICONS[props.category] + " " + props.category}></i>
                     </div>
                     <div className="flex grow flex-wrap">
-                        <input type="text" onChange={handleChange} defaultValue={props.name} className="bg-transparent mb-1 grow border-0 p-0 text-lg outline outline-1 outline-blue-500 rounded-lg px-2"></input>
                         <div className="grow">
-                            <p className={"category text-xs inline p-1 rounded-md " + props.category}>{props.category}</p>
-                            {props.repeatable ? repeatableIcon : null}
+                            <input type="text" onChange={handleChange} defaultValue={props.name} className="bg-transparent mb-1 w-full border-0 p-0 text-lg outline outline-1 outline-blue-500 rounded-lg px-2"></input>
+                            <div className="">
+                                <p className={"category text-xs inline p-1 rounded-md " + props.category}>{props.category}</p>
+                                {props.repeatable ? repeatableIcon : null}
+                            </div>
                         </div>
                     </div>
                 </div>
