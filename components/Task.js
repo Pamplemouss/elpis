@@ -1,11 +1,5 @@
 import React, { useState } from "react";
 
-const ICONS = {
-    Maison: "fa-home",
-    Santé: "fa-kit-medical",
-    Sport: "fa-running",
-}
-
 export default function Task(props) {
     const [isEditing, setEditing] = useState(false);
     const [newName, setNewName] = useState(props.name);
@@ -35,12 +29,12 @@ export default function Task(props) {
             <div className="flex w-full p-4 justify-between group-hover:bg-white/10 border-b border-white/30">
                 <div className="flex">
                     <div className="w-11 h-11 bg-white/10 rounded-lg m-1 mr-5 inline-flex justify-center items-center">
-                        <i className={"icon fa-solid text-xl " + ICONS[props.category] + " " + props.category}></i>
+                        <i className={`icon fa-solid text-xl ${props.categoryFaCode} ${props.categoryName}`}></i>
                     </div>
                     <div className="">
                         <p className="text-lg mb-1">{props.name}</p>
                         <div>
-                            <p className={"category text-xs inline p-1 rounded-md " + props.category}>{props.category}</p>
+                            <p className={`category text-xs inline p-1 rounded-md ${props.categoryName}`}>{props.categoryName}</p>
                             {props.repeatable ? repeatableIcon : null}
                         </div>
                     </div>
@@ -66,13 +60,13 @@ export default function Task(props) {
             <div className="flex w-full p-4 justify-between bg-blue-500/20 group-hover:bg-blue-500/30 border-b border-white/30">
                 <div className="flex grow">
                     <div className="flex-none w-11 h-11 bg-white/10 rounded-lg m-1 mr-5 inline-flex justify-center items-center">
-                        <i className={"icon fa-solid text-xl " + ICONS[props.category] + " " + props.category}></i>
+                        <i className={`icon fa-solid text-xl ${props.categoryFaCode} ${props.categoryName}`}></i>
                     </div>
                     <div className="flex grow flex-wrap">
                         <div className="grow">
                             <input type="text" onChange={handleChange} defaultValue={props.name} className="bg-transparent mb-1 w-full border-0 p-0 text-lg outline outline-1 outline-blue-500 rounded-lg px-2"></input>
                             <div className="">
-                                <p className={"category text-xs inline p-1 rounded-md " + props.category}>{props.category}</p>
+                                <p className={`category text-xs inline p-1 rounded-md ${props.categoryName}`}>{props.categoryName}</p>
                                 {props.repeatable ? repeatableIcon : null}
                             </div>
                         </div>

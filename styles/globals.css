@@ -46,3 +46,30 @@ body {
   @apply bg-orange-500/30;
   @apply text-orange-500;
 }
+
+.icon.Alimentation {
+  @apply text-red-500;
+}
+
+.category.Alimentation {
+  @apply bg-red-500/30;
+  @apply text-red-500;
+}
+
+.icon.Etudes {
+  @apply text-violet-500;
+}
+
+.category.Etudes {
+  @apply bg-violet-500/30;
+  @apply text-violet-500;
+}
+
+.icon.Divertissement {
+  @apply text-sky-500;
+}
+
+.category.Divertissement {
+  @apply bg-sky-500/30;
+  @apply text-sky-500;
+}
