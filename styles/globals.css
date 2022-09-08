@@ -10,14 +10,19 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: #1d2738;
-  }
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  color: white;
+  background: #1d2738;
+}
+
+
+body {
+  @apply bg-gray-900;
 }
 
 .icon.Santé {
@@ -72,4 +77,31 @@ body {
 .category.Divertissement {
   @apply bg-sky-500/30;
   @apply text-sky-500;
+}
+
+.date.active {
+  @apply bg-blue-500;
+  @apply hover:bg-blue-500;
+  @apply text-white;
+}
+
+.date.active .dateNumber {
+  @apply bg-blue-600;
+}
+
+.today {
+  @apply outline;
+  @apply outline-2;
+  @apply outline-white/50
+}
+
+.today.active {
+  @apply outline;
+  @apply outline-2;
+  @apply outline-blue-300;
+  @apply outline-offset-2;
+}
+
+.active .slot {
+  @apply visible;
 }

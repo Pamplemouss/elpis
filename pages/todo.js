@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import Task from '../components/Task';
 
@@ -21,7 +21,6 @@ const CATEGORIES = [
     { id: 6, name: "Alimentation", faCode: "fa-utensils" },
 ];
 
-
 export default function Todo() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -29,10 +28,29 @@ export default function Todo() {
     const [idToDelete, setIdToDelete] = useState("");
     const [newCategory, setNewCategory] = useState();
     const [newName, setNewName] = useState("");
+    const [datesLoaded, setDatesLoaded] = useState([...Array(101)].map((element, index) => {
+        var date = new Date();
+        date.setDate(date.getDate() + index - Math.floor((101 / 2)));
+        date.setHours(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+        date.setMilliseconds(0);
+        return date;
+    }));
+
+    var todayDate = new Date();
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
+    todayDate.setMilliseconds(0);
+    todayDate = todayDate.getTime();
+
+    const [activeDate, setActiveDate] = useState(todayDate);
+
     const taskList = tasks.map((task) => {
-        var category = CATEGORIES.filter(category => { if (category.id === task.category) return category });
-        var categoryName = category[0].name;
-        var categoryFaCode = category[0].faCode;
+        const category = CATEGORIES.filter(category => { if (category.id === task.category) return category });
+        const categoryName = category[0].name;
+        const categoryFaCode = category[0].faCode;
         return (
             <Task
                 key={task.id}
@@ -44,17 +62,37 @@ export default function Todo() {
                 repeatable={task.repeatable}
                 toggleTask={toggleTask}
                 deleteTask={askDelete}
-                editTask={editTask} />
+                editTask={editTask}
+            />
         )
     });
     const categoriesList = CATEGORIES.map((category) => (
-        <div key={category.id} onClick={() => setNewCategory(category.id)} className={`flex border border-gray-500 p-2 rounded-xl justify-between items-center hover:bg-gray-600 cursor-pointer duration-75 ${newCategory === category.id ? "bg-blue-500/30 hover:bg-blue-500/50" : null}`}>
+        <div key={category.id} onClick={() => setNewCategory(category.id)} className={`flex border border-gray-500 shadow-md p-2 rounded-xl justify-between items-center hover:bg-gray-600 cursor-pointer duration-75 ${newCategory === category.id ? "outline outline-2 outline-blue-500 hover:bg-gray-800 bg-gray-800" : null}`}>
             <p>{category.name}</p>
             <div className="flex-none w-9 h-9 bg-white/10 rounded-lg inline-flex justify-center items-center">
                 <i className={`icon fa-solid text-md icon ${category.faCode} ${category.name}`}></i>
             </div>
         </div>
     ));
+
+    const datesList = datesLoaded.map((date) => {
+        var weekday = new Intl.DateTimeFormat(["fr"], { weekday: "short" }).format(date).slice(0, 3);
+        var month = new Intl.DateTimeFormat(["fr"], { month: "long" }).format(date);
+
+        return (
+            <div key={date.getTime()} id={date.getTime()} onClick={changeDate} className={`date text-white/80 shadow-md hover:bg-gray-600 relative duration-150 bg-gray-700 text-white text-center w-12 h-16 rounded-2xl flex flex-col justify-between cursor-pointer ${activeDate == date.getTime() ? "active" : null} ${date.getTime() == todayDate ? "today" : null}`}>
+                {date.getDate() == 1 &&
+                    <div className="flex absolute -top-7 left-3 rounded-lg">
+                        <span className="capitalize text-gray-300 text-sm italic">{month}</span>
+                        <div className="absolute w-1 h-4 bg-white/50 -left-3 top-1 rounded-r"></div>
+                    </div>
+                }
+                <div className="grow inline-flex justify-center items-center capitalize" style={{ fontSize: "0.7em" }}>{weekday}</div>
+                <div className=" dateNumber hover:bg-gray-500 bg-gray-600 duration-150 rounded-b-2xl rounded-t-xl h-10 leading-8 font-bold">{date.getDate()}</div>
+                <span className="slot invisible w-4 h-1 absolute bottom-0 bg-white/70 left-4 rounded-t"></span>
+            </div>
+        )
+    });
 
     function handleChange(e) {
         setNewName(e.target.value);
@@ -93,13 +131,97 @@ export default function Todo() {
         setNewCategory();
     }
 
+    function changeDate(e) {
+        if (scrolled) {
+            scrolled = false;
+            return;
+        }
+        setActiveDate(e.target.closest(".date").getAttribute("id"));
+    }
+
+    useEffect(() => {
+        document.getElementsByClassName("active")[0].scrollIntoView({ behavior: 'smooth', inline: "center" });
+    }, [activeDate]);
+
+    var isScrolling = false;
+    var clientX;
+    var scrollLeft;
+    var scrolled = false;
+    function onMouseDown(e) {
+        clientX = e.clientX;
+        scrollLeft = document.getElementById("datesGrid").scrollLeft;
+        isScrolling = true;
+    }
+    function onMouseUp() {
+        isScrolling = false;
+    }
+    function onMouseLeave() {
+        isScrolling = false;
+    }
+    function onMouseMove(e) {
+        if (!isScrolling) return;
+        var grid = document.getElementById("datesGrid");
+        var walk = clientX - e.clientX;
+        grid.scrollLeft = scrollLeft + walk;
+        console.log(Math.abs(scrollLeft - grid.scrollLeft));
+         if (Math.abs(scrollLeft - grid.scrollLeft) > 20) scrolled = true;
+    }
+
+    /*function checkLoadDates() {
+        const grid = document.getElementById("datesGrid");
+        const scrollRatio = grid.scrollLeft / (grid.scrollWidth - grid.clientWidth);
+
+        const threshold = 0.25;
+        const numberOfDatesToLoad = 25;
+        if (scrollRatio > 1-threshold) {
+            var datesToAdd = [];
+            for (var i = 0; i < numberOfDatesToLoad; i++) {
+                var newDate = new Date(datesLoaded.at(-1));
+                newDate.setDate(newDate.getDate() + i + 1);
+                datesToAdd = [...datesToAdd, newDate];
+            }
+            
+            setDatesLoaded([...datesLoaded, ...datesToAdd]);
+        }
+        else if (scrollRatio < threshold) {
+            var datesToAdd = [];
+            for (var i = 0; i < numberOfDatesToLoad; i++) {
+                var newDate = new Date(datesLoaded.at(0));
+                newDate.setDate(newDate.getDate() - i - 1);
+                datesToAdd = [newDate, ...datesToAdd];
+            }
+            setDatesLoaded([...datesToAdd, ...datesLoaded]);
+        }
+    }*/
+
     return (
-        <div className="flex justify-center">
+        <div>
             <Head>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
             </Head>
-            <div className="w-2/5 my-10">
-                {taskList}
+
+            {/* DATES */}
+            <div className="
+            w-10/12 relative mx-auto rounded-l-2xl overflow-hidden mt-10 mb-5
+            before:block before:absolute before:pointer-events-none before:bg-gradient-to-r before:from-slate-900 before:w-24 before:h-full before:left-0 before:top-0 before:z-10
+            after:block after:absolute after:pointer-events-none after:bg-gradient-to-r after:from-slate-900 after:w-24 after:h-full after:right-0 after:top-0 after:z-10 after:scale-x-flip
+            ">
+                <div
+                    id="datesGrid"
+                    onMouseMove={onMouseMove}
+                    onMouseUp={onMouseUp}
+                    onMouseDown={onMouseDown}
+                    onMouseLeave={onMouseLeave}
+                    className="relative grid grid-rows-1 grid-flow-col overflow-x-hidden select-none gap-3 py-7 px-24 justify-between cursor-pointer"
+                >
+                    {datesList}
+                </div></div>
+
+            {/* TASKS LIST */}
+            <div className="flex justify-center">
+                <div className="w-2/5">
+                    {taskList}
+                </div>
             </div>
 
             <div onClick={() => setShowAddModal(true)} className="fixed bottom-10 right-10 bg-blue-500 p-7 rounded-2xl cursor-pointer shadow-md hover:bg-blue-700 duration-150">
@@ -107,7 +229,7 @@ export default function Todo() {
             </div>
 
             {showAddModal ? (
-                <div id="modal" aria-hidden="true" className="w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
+                <div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
                     <div className="items-center bg-gray-700 text-gray-300 rounded-lg p-10 w-1/3">
                         <div className="relative">
                             <input onChange={handleChange} type="text" className="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
@@ -118,7 +240,7 @@ export default function Todo() {
                             {categoriesList}
                         </div>
                         <div className="flex space-x-5 mt-10">
-                            <button disabled={newName.length == 0 || newCategory == undefined ? true : false} className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => {addTask(); setShowAddModal(false)}}>Confirm</button>
+                            <button disabled={newName.length == 0 || newCategory == undefined ? true : false} className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => { addTask(); setShowAddModal(false) }}>Confirm</button>
                             <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => { setNewName(""); setNewCategory(); setShowAddModal(false) }}>Cancel</button>
                         </div>
                     </div>
@@ -126,7 +248,7 @@ export default function Todo() {
             ) : null}
 
             {showDeleteModal ? (
-                <div id="modal" aria-hidden="true" className="w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
+                <div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
                     <div className="items-center bg-gray-700 text-gray-300 rounded-lg p-8">
                         <div className="flex justify-center mb-7">
                             <i className="fa-solid fa-exclamation-circle" style={{ fontSize: "2em" }}></i>
