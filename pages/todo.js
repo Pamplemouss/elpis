@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import Task from '../components/Task';
 
@@ -80,7 +80,14 @@ export default function Todo() {
         var month = new Intl.DateTimeFormat(["fr"], { month: "long" }).format(date);
 
         return (
-            <div key={date.getTime()} id={date.getTime()} onClick={changeDate} className={`date text-white/80 shadow-md hover:bg-gray-600 relative duration-150 bg-gray-700 text-white text-center w-12 h-16 rounded-2xl flex flex-col justify-between cursor-pointer ${activeDate == date.getTime() ? "active" : null} ${date.getTime() == todayDate ? "today" : null}`}>
+            <div
+                key={date.getTime()}
+                id={date.getTime()}
+                onClick={changeDate}
+                className={`date group text-white/80 shadow-md relative duration-150 text-center w-12 h-16 rounded-2xl flex flex-col justify-between cursor-pointer
+                    ${activeDate == date.getTime() ? "active bg-blue-500" : "hover:bg-gray-600 bg-gray-700"}
+                    ${date.getTime() == todayDate ? (activeDate == date.getTime() ? "today outline outline-2 outline-offset-2 outline-blue-300" : "today outline outline-2 outline-white/50") : null}`}
+            >
                 {date.getDate() == 1 &&
                     <div className="flex absolute -top-7 left-3 rounded-lg">
                         <span className="capitalize text-gray-300 text-sm italic">{month}</span>
@@ -88,7 +95,7 @@ export default function Todo() {
                     </div>
                 }
                 <div className="grow inline-flex justify-center items-center capitalize" style={{ fontSize: "0.7em" }}>{weekday}</div>
-                <div className=" dateNumber hover:bg-gray-500 bg-gray-600 duration-150 rounded-b-2xl rounded-t-xl h-10 leading-8 font-bold">{date.getDate()}</div>
+                <div className={`dateNumber duration-150 rounded-b-2xl rounded-t-xl h-10 leading-8 font-bold ${activeDate == date.getTime() ? "active bg-blue-600 text-white" : "group-hover:bg-gray-500 bg-gray-600"}`}>{date.getDate()}</div>
                 <span className="slot invisible w-4 h-1 absolute bottom-0 bg-white/70 left-4 rounded-t"></span>
             </div>
         )
@@ -139,7 +146,7 @@ export default function Todo() {
         setActiveDate(e.target.closest(".date").getAttribute("id"));
     }
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         document.getElementsByClassName("active")[0].scrollIntoView({ behavior: 'smooth', inline: "center" });
     }, [activeDate]);
 
@@ -163,8 +170,7 @@ export default function Todo() {
         var grid = document.getElementById("datesGrid");
         var walk = clientX - e.clientX;
         grid.scrollLeft = scrollLeft + walk;
-        console.log(Math.abs(scrollLeft - grid.scrollLeft));
-         if (Math.abs(scrollLeft - grid.scrollLeft) > 20) scrolled = true;
+        if (Math.abs(scrollLeft - grid.scrollLeft) > 20) scrolled = true;
     }
 
     /*function checkLoadDates() {
