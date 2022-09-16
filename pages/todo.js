@@ -1,16 +1,19 @@
 import Head from 'next/head'
 import React, { useState } from "react";
 import { nanoid } from "nanoid";
+import { motion, AnimatePresence } from "framer-motion"
 import Task from '../components/Task';
-import Calendar from '../components/Calendar';
+import DatesSlider from '../components/DatesSlider';
+import AddTaskModal from '../components/AddTaskModal';
+import sameDay from '../utilities/Utilities';
 
 const TASKS = [
-    { id: nanoid(), name: "Méditation", category: 2, checked: false, repeatable: true },
-    { id: nanoid(), name: "Aspirateur", category: 1, checked: true, repeatable: true },
-    { id: nanoid(), name: "Poussières", category: 1, checked: false, repeatable: true },
-    { id: nanoid(), name: "Vaisselle", category: 6, checked: false, repeatable: false },
-    { id: nanoid(), name: "Jogging", category: 3, checked: false, repeatable: true },
-    { id: nanoid(), name: "Magie", category: 5, checked: false, repeatable: true },
+    { id: nanoid(), name: "Méditation", category: 2, checked: false, repeatable: true, targetDate: new Date() },
+    { id: nanoid(), name: "Aspirateur", category: 1, checked: true, repeatable: true, targetDate: new Date() },
+    { id: nanoid(), name: "Poussières", category: 1, checked: false, repeatable: true, targetDate: new Date() },
+    { id: nanoid(), name: "Vaisselle", category: 6, checked: false, repeatable: false, targetDate: new Date(2022, 8, 13) },
+    { id: nanoid(), name: "Jogging", category: 3, checked: false, repeatable: true, targetDate: new Date(2022, 8, 13) },
+    { id: nanoid(), name: "Magie", category: 5, checked: false, repeatable: true, targetDate: new Date(2022, 8, 11) },
 ];
 
 const CATEGORIES = [
@@ -25,12 +28,15 @@ const CATEGORIES = [
 export default function Todo() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showToast, setShowToast] = useState(false);
     const [tasks, setTasks] = useState(TASKS);
     const [idToDelete, setIdToDelete] = useState("");
-    const [newCategory, setNewCategory] = useState();
-    const [newName, setNewName] = useState("");
+    const [activeDate, setActiveDate] = useState(new Date());
+    const [toastMessage, setToastMessage] = useState("");
 
-    const taskList = tasks.map((task) => {
+    const taskList = tasks.filter((task) => {
+        if (sameDay(task.targetDate, activeDate)) return task;
+    }).map((task) => {
         const category = CATEGORIES.filter(category => { if (category.id === task.category) return category });
         const categoryName = category[0].name;
         const categoryFaCode = category[0].faCode;
@@ -49,18 +55,6 @@ export default function Todo() {
             />
         )
     });
-    const categoriesList = CATEGORIES.map((category) => (
-        <div key={category.id} onClick={() => setNewCategory(category.id)} className={`flex border border-gray-500 shadow-md p-2 rounded-xl justify-between items-center hover:bg-gray-600 cursor-pointer duration-75 ${newCategory === category.id ? "outline outline-2 outline-blue-500 hover:bg-gray-800 bg-gray-800" : null}`}>
-            <p>{category.name}</p>
-            <div className="flex-none w-9 h-9 bg-white/10 rounded-lg inline-flex justify-center items-center">
-                <i className={`icon fa-solid text-md icon ${category.faCode} ${category.name}`}></i>
-            </div>
-        </div>
-    ));
-
-    function handleChange(e) {
-        setNewName(e.target.value);
-    }
 
     function toggleTask(id) {
         const updatedTasks = tasks.map((task) => {
@@ -86,13 +80,21 @@ export default function Todo() {
     function deleteTask() {
         const remainingTasks = tasks.filter((task) => task.id !== idToDelete);
         setTasks(remainingTasks);
+        displayToast("Task deleted!");
     }
 
-    function addTask() {
-        const newTask = { id: nanoid(), name: newName, category: newCategory, checked: false, repeatable: false };
+    function addTask(newTask) {
         setTasks([...tasks, newTask]);
-        setNewName("");
-        setNewCategory();
+        displayToast("New task created!");
+    }
+
+    function displayToast(message) {
+        setToastMessage(message);
+
+        setShowToast(true);
+        setTimeout(() => {
+            setShowToast(false);
+        }, 2000);
     }
 
     return (
@@ -102,7 +104,7 @@ export default function Todo() {
             </Head>
 
             {/* DATES */}
-            <Calendar />
+            <DatesSlider activeDate={activeDate} setActiveDate={setActiveDate} />
 
             {/* TASKS LIST */}
             <div className="flex justify-center">
@@ -116,21 +118,7 @@ export default function Todo() {
             </div>
 
             {showAddModal ? (
-                <div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
-                    <div className="items-center bg-gray-700 text-gray-300 rounded-lg p-10 w-1/3">
-                        <div className="relative">
-                            <input onChange={handleChange} type="text" className="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
-                            <label htmlFor="floating_outlined" className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Task name</label>
-                        </div>
-                        <div className="grid gap-2 grid-cols-2 mt-5">
-                            {categoriesList}
-                        </div>
-                        <div className="flex space-x-5 mt-10">
-                            <button disabled={newName.length == 0 || newCategory == undefined ? true : false} className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => { addTask(); setShowAddModal(false) }}>Confirm</button>
-                            <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => { setNewName(""); setNewCategory(); setShowAddModal(false) }}>Cancel</button>
-                        </div>
-                    </div>
-                </div>
+                <AddTaskModal addTask={addTask} setShowModal={setShowAddModal} />
             ) : null}
 
             {showDeleteModal ? (
@@ -147,6 +135,25 @@ export default function Todo() {
                     </div>
                 </div>
             ) : null}
+
+            <AnimatePresence>
+            {showToast ? (
+                <motion.div id="addToast" className="fixed right-10 bottom-32 px-8 mx-auto bg-emerald-500 shadow-lg text-sm rounded-lg mb-3"
+                    initial={{ scale: 0, y: -20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.3 , type: "spring" }}
+                >
+                    <div className="text-center flex justify-between items-center py-2 px-3">
+                        <svg className="absolute w-4 h-4 mr-2 left-3 fill-current" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path>
+                        </svg>
+                        <div className="font-bold text-center w-full">{toastMessage}</div>
+                    </div>
+                </motion.div>
+            ) : null}
+            </AnimatePresence>
+            
         </div>
     )
 }
