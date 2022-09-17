@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import sameDay from '../utilities/Utilities';
+import { sameDay } from '../utilities/Utilities';
 
 export default function Calendar(props) {
     const [dateToDisplay, setDateToDisplay] = useState(new Date(props.activeDate.getFullYear(), props.activeDate.getMonth(), 1));
@@ -14,7 +14,7 @@ export default function Calendar(props) {
                 onClick={() => { setDateToDisplay(newDate); props.setActiveDate(newDate); }}
                 className={`rounded-lg w-10 h-10 inline-flex justify-center items-center shadow cursor-pointer
                     ${newDate.getMonth() != firstDay.getMonth() ? "text-gray-500 bg-gray-500/5" : (sameDay(props.activeDate, newDate) ? "active bg-blue-500 text-white" : "bg-gray-500/10 hover:bg-gray-500/30")}
-                    ${sameDay(todayDate, newDate) ? "outline outline-1 outline-white/50 outline-offset-2" : ""}`}
+                    ${sameDay(todayDate, newDate) ? "outline outline-2 outline-white/75 " : ""}`}
             >
                 {newDate.getDate()}
             </div>

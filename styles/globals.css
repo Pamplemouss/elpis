@@ -25,59 +25,7 @@ body {
   @apply bg-gray-900;
 }
 
-.icon.Santé {
-  @apply text-emerald-500;
-}
 
-.category.Santé {
-  @apply bg-emerald-500/30;
-  @apply text-emerald-500;
-}
-
-.icon.Sport {
-  @apply text-blue-500;
-}
-
-.category.Sport {
-  @apply bg-blue-500/30;
-  @apply text-blue-500;
-}
-
-.icon.Maison {
-  @apply text-orange-500;
-}
-
-.category.Maison {
-  @apply bg-orange-500/30;
-  @apply text-orange-500;
-}
-
-.icon.Alimentation {
-  @apply text-red-500;
-}
-
-.category.Alimentation {
-  @apply bg-red-500/30;
-  @apply text-red-500;
-}
-
-.icon.Etudes {
-  @apply text-violet-500;
-}
-
-.category.Etudes {
-  @apply bg-violet-500/30;
-  @apply text-violet-500;
-}
-
-.icon.Divertissement {
-  @apply text-sky-500;
-}
-
-.category.Divertissement {
-  @apply bg-sky-500/30;
-  @apply text-sky-500;
-}
 
 .active .slot {
   @apply visible;

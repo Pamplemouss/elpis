@@ -2,26 +2,16 @@ import React, { useState } from "react";
 import Calendar from '../components/Calendar';
 import { nanoid } from "nanoid";
 
-const CATEGORIES = [
-    { id: 1, name: "Maison", faCode: "fa-home" },
-    { id: 2, name: "Santé", faCode: "fa-kit-medical" },
-    { id: 3, name: "Sport", faCode: "fa-running" },
-    { id: 4, name: "Divertissement", faCode: "fa-film" },
-    { id: 5, name: "Etudes", faCode: "fa-graduation-cap" },
-    { id: 6, name: "Alimentation", faCode: "fa-utensils" },
-];
-
 export default function AddTaskModal(props) {
     const [newCategory, setNewCategory] = useState();
     const [newName, setNewName] = useState("");
     const [newDate, setNewDate] = useState(new Date());
     const [state, setState] = useState(0);
-    var template;
-    const categoriesList = CATEGORIES.map((category) => (
-        <div key={category.id} onClick={() => setNewCategory(category.id)} className={`flex shadow-md p-2 rounded-xl justify-between items-center cursor-pointer duration-150 outline-blue-500 ${newCategory === category.id ? "outline outline-1 outline-offset-2 bg-gray-800/30" : "text-gray-500 bg-gray-500/10 hover:bg-gray-500/20"}`}>
+    const categoriesList = props.categories.map((category) => (
+        <div key={category.id} onClick={() => setNewCategory(category.id)} className={`flex shadow-md p-2 rounded-xl justify-between items-center cursor-pointer hover:duration-150 outline-blue-500 ${newCategory === category.id ? "outline outline-1 outline-offset-2 bg-gray-800/30" : "text-gray-500 bg-gray-500/10 hover:bg-gray-500/20"}`}>
             <p>{category.name}</p>
-            <div className="flex-none w-9 h-9 bg-white/10 rounded-lg inline-flex justify-center items-center">
-                <i className={`icon fa-solid text-md icon ${category.faCode} ${category.name}`}></i>
+            <div className="flex-none w-9 h-9 bg-white/10 rounded-lg inline-flex justify-center items-center ml-5">
+                <i className={`fa-solid text-md ${category.faCode}`} style={{ color: category.color }}></i>
             </div>
         </div>
     ));
@@ -72,8 +62,11 @@ export default function AddTaskModal(props) {
 
     return (
         <div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
-            <div className="items-center bg-gray-700 text-gray-300 rounded-lg p-10 w-1/3">
+            <div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-10">
                 {TEMPLATES[state]}
+                <div onClick={() => props.setShowModal(false)} className="w-5 h-5 rounded-lg absolute top-2 right-2 inline-flex justify-center items-center cursor-pointer text-white/30 hover:text-white hover:shadow">
+                    <i className="fa-solid fa-times"></i>
+                </div>
             </div>
         </div>
     )

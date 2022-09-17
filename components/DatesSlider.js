@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Calendar from '../components/Calendar';
-import sameDay from '../utilities/Utilities';
+import { sameDay } from '../utilities/Utilities';
 
 export default function DatesSlider(props) {
     var todayDate = new Date();
@@ -21,8 +21,9 @@ export default function DatesSlider(props) {
                 id={date.getTime()}
                 onClick={changeDate}
                 className={`date group text-white/80 shadow-md relative duration-150 text-center w-12 h-16 rounded-2xl flex flex-col justify-between cursor-pointer
-                    ${sameDay(props.activeDate, date) ? "active bg-blue-500" : "hover:bg-gray-600 bg-gray-700"}
-                    ${sameDay(date, todayDate) ? (sameDay(props.activeDate, date) ? "today outline outline-2 outline-offset-2 outline-blue-300" : "today outline outline-2 outline-white/50") : null}`}
+                    ${sameDay(date, props.activeDate) ? "active bg-blue-500 -translate-y-1" : "hover:bg-gray-600 bg-gray-700"}
+                    ${sameDay(date, todayDate) ? (sameDay(props.activeDate, date) ? "today outline outline-2 outline-offset-2 outline-blue-300" : "today outline outline-2 outline-white/50") : null}
+                    ${props.tasks.find(task => sameDay(task.targetDate, date)) ? "" : ""}`}
             >
                 {date.getDate() == 1 &&
                     <div className="flex absolute -top-7 left-3 rounded-lg">
@@ -32,7 +33,10 @@ export default function DatesSlider(props) {
                 }
                 <div className="grow inline-flex justify-center items-center capitalize" style={{ fontSize: "0.7em" }}>{weekday}</div>
                 <div className={`dateNumber duration-150 rounded-b-2xl rounded-t-xl h-10 leading-8 font-bold ${sameDay(props.activeDate, date) ? "active bg-blue-600 text-white" : "group-hover:bg-gray-500 bg-gray-600"}`}>{date.getDate()}</div>
-                <span className="slot invisible w-4 h-1 absolute bottom-0 bg-white/70 left-4 rounded-t"></span>
+                <span className="slot invisible w-4 h-1 absolute bottom-0 bg-white/70 left-1/2 -translate-x-1/2 rounded-t"></span>
+                {props.tasks.find(task => sameDay(task.targetDate, date)) && !sameDay(props.activeDate, date) ? (
+                    <div className="absolute w-1 h-1 rounded-xl bg-white/50 bottom-1 left-1/2 -translate-x-1/2"></div>
+                ) : null}
             </div>
         )
     });
@@ -144,8 +148,11 @@ export default function DatesSlider(props) {
             </div>
             {showModal ? (
                 <div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
-                    <div className="items-center bg-gray-700 text-gray-300 rounded-lg p-10">
+                    <div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-10">
                         <Calendar activeDate={props.activeDate} setActiveDate={changeDateCalendar} />
+                        <div onClick={() => setShowModal(false)} className="w-5 h-5 rounded-lg absolute top-2 right-2 inline-flex justify-center items-center cursor-pointer text-white/30 hover:text-white hover:shadow">
+                            <i className="fa-solid fa-times"></i>
+                        </div>
                     </div>
                 </div>
             ) : null}
