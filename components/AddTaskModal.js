@@ -71,7 +71,7 @@ export default function AddTaskModal(props) {
             <div className="flex gap-4">
                 <div className="relative w-full">
                     <input onChange={handleChangeName} value={newTask.name} type="text" className="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
-                    <label for="floating_outlined" className="pointer-events-none absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Task name</label>
+                    <label htmlFor="floating_outlined" className="pointer-events-none absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-gray-700 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">Task name</label>
                 </div>
                 <div onClick={() => setNewTask({...newTask, repeatable: !newTask.repeatable})} className={`w-16 rounded-lg inline-flex justify-center items-center cursor-pointer shadow-md duration-150 ${newTask.repeatable ? "bg-blue-500 text-white" : "bg-gray-500/10 hover:bg-gray-500/20 text-gray-500"}`}>
                     <i className="fa-solid text-md fa-sync"></i>
@@ -94,14 +94,14 @@ export default function AddTaskModal(props) {
                 return (
                     <div key={days[index]} className="flex items-center">
                         <input onChange={handleChangeWeek} id={`checkbox-${days[index]}`} day={days[index]} checked={repeatWeek.includes(days[index])} type="checkbox" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
-                        <label for={`checkbox-${days[index]}`} className="ml-2 text-sm font-medium text-gray-300 cursor-pointer">{days[index]}</label>
+                        <label htmlFor={`checkbox-${days[index]}`} className="ml-2 text-sm font-medium text-gray-300 cursor-pointer">{days[index]}</label>
                     </div>
                 ) */
                 var days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
                 return (
                     <div key={days[index]} className="flex items-center">
                         <input onChange={handleChangeWeek} id={`checkbox-${index}`} day={index} checked={repeatWeek.includes(index)} type="checkbox" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
-                        <label for={`checkbox-${index}`} className="ml-2 text-sm font-medium text-gray-300 cursor-pointer">{days[index]}</label>
+                        <label htmlFor={`checkbox-${index}`} className="ml-2 text-sm font-medium text-gray-300 cursor-pointer">{days[index]}</label>
                     </div>
                 )
             })}
@@ -132,21 +132,21 @@ export default function AddTaskModal(props) {
             <div className="">
                 <div className="flex items-center mb-2">
                     <input onChange={handleChangeRule} defaultChecked={repeatRule == "daily"} id="default-radio-1" type="radio" value="daily" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
-                    <label for="default-radio-1" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Daily</label>
+                    <label htmlFor="default-radio-1" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Daily</label>
                 </div>
                 <div className="flex items-center mb-2">
                     <input onChange={handleChangeRule} defaultChecked={repeatRule == "week"} id="default-radio-2" type="radio" value="week" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
-                    <label for="default-radio-2" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Certain days of the week</label>
+                    <label htmlFor="default-radio-2" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Certain days of the week</label>
                 </div>
                 {repeatRule == "week" ? weekMiniTemplate : null}
                 <div className="flex items-center mb-2">
                     <input onChange={handleChangeRule} defaultChecked={repeatRule == "month"} id="default-radio-3" type="radio" value="month" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
-                    <label for="default-radio-3" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Certain days of the month</label>
+                    <label htmlFor="default-radio-3" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Certain days of the month</label>
                 </div>
                 {repeatRule == "month" ? monthMiniTemplate : null}
                 <div className="flex items-center">
                     <input onChange={handleChangeRule} defaultChecked={repeatRule == "day"} id="default-radio-4" type="radio" value="day" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
-                    <label for="default-radio-4" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Every X days</label>
+                    <label htmlFor="default-radio-4" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Every X days</label>
                 </div>
                 {repeatRule == "day" ? dayMiniTemplate : null}
             </div>
