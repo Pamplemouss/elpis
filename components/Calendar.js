@@ -7,7 +7,11 @@ export default function Calendar(props) {
     const calendarDates = [...Array(42)].map((element, index) => {
         var firstDay = new Date(new Date(dateToDisplay).setDate(1));
         var newDate = new Date(firstDay);
-        newDate.setDate(newDate.getDate() + index - firstDay.getDay());
+        newDate.setDate(newDate.getDate() + index - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
+        newDate.setHours(0);
+        newDate.setMinutes(0);
+        newDate.setSeconds(0);
+        newDate.setMilliseconds(0);
 
         return (
             <div key={newDate}

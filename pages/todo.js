@@ -6,15 +6,17 @@ import Task from '../components/Task';
 import DatesSlider from '../components/DatesSlider';
 import AddTaskModal from '../components/AddTaskModal';
 import CategoriesModal from '../components/CategoriesModal';
-import { sameDay } from '../utilities/Utilities';
+import { sameDay, date1BeforeDate2 } from '../utilities/Utilities';
 
 const TASKS = [
-    { id: nanoid(), name: "Méditation", category: 2, checked: false, repeatable: true, targetDate: new Date() },
-    { id: nanoid(), name: "Aspirateur", category: 1, checked: true, repeatable: true, targetDate: new Date() },
-    { id: nanoid(), name: "Poussières", category: 1, checked: false, repeatable: true, targetDate: new Date() },
-    { id: nanoid(), name: "Vaisselle", category: 6, checked: false, repeatable: false, targetDate: new Date(2022, 8, 13) },
-    { id: nanoid(), name: "Jogging", category: 3, checked: false, repeatable: true, targetDate: new Date(2022, 8, 13) },
-    { id: nanoid(), name: "Magie", category: 5, checked: false, repeatable: true, targetDate: new Date(2022, 8, 11) },
+    { id: nanoid(), name: "Méditation", category: 2, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "daily" } },
+    { id: nanoid(), name: "Aspirateur", category: 1, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "week", value: [0, 3] } },
+    { id: nanoid(), name: "Poussières", category: 1, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "month", value: [1, 15] } },
+    { id: nanoid(), name: "Vaisselle", category: 6, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "daily" } },
+    { id: nanoid(), name: "Jogging", category: 3, checked: [], startDate: new Date(2022, 8, 13), repeatable: true, repeat: { rule: "week", value: [0, 2, 4] } },
+    { id: nanoid(), name: "Magie", category: 5, checked: [], startDate: new Date(2022, 8, 11), repeatable: true, repeat: { rule: "day", value: 3 } },
+    { id: nanoid(), name: "Nettoyer douche", category: 0, checked: [new Date(2022, 8, 16)], startDate: new Date(2022, 8, 15), repeatable: false },
+    { id: nanoid(), name: "Piano 777", category: 5, checked: [], startDate: new Date(2022, 8, 16), repeatable: false },
 ];
 
 const CATEGORIES = [
@@ -39,13 +41,45 @@ export default function Todo() {
     const [toastMessage, setToastMessage] = useState("");
 
     const taskList = tasks.filter((task) => {
-        if (sameDay(task.targetDate, activeDate)) return task;
+        console.log(task)
+        if (!date1BeforeDate2(task.startDate, activeDate)) return;      // Filter if active date is before starting date
+
+        if (!task.repeatable && task.checked.length > 0) {
+            if (!sameDay(task.checked[0], activeDate)) return;          // Filter if non repeatable task was checked another day
+        }
+
+        if (task.repeatable) {
+            switch (task.repeat.rule) {
+                case "daily":
+                    break;
+                case "week":
+                    var day = activeDate.getDay() === 0 ? 6 : activeDate.getDay() - 1;  //Formate day back to Monday = 0, Tuesday = 1 etc..
+                    if (!task.repeat.value.includes(day)) return;
+                    break;
+                case "month":
+                    if (!task.repeat.value.includes(activeDate.getDate())) return;
+                    break;
+                case "day":
+                    var testDate = new Date(task.startDate);
+                    var isMultiple = false;
+                    do {
+                        if (sameDay(testDate, activeDate)) isMultiple = true;
+                        testDate.setDate(testDate.getDate() + task.repeat.value);
+                    } while (date1BeforeDate2(testDate, activeDate))
+                    if (!isMultiple) return;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return task;
     }).map((task) => {
         const category = categories.filter(category => { if (category.id === task.category) return category })[0];
         return (
             <Task
                 key={task.id}
                 task={task}
+                activeDate={activeDate}
                 category={category}
                 toggleTask={toggleTask}
                 deleteTask={askDelete}
@@ -56,7 +90,10 @@ export default function Todo() {
 
     function toggleTask(id) {
         const updatedTasks = tasks.map((task) => {
-            if (task.id === id) task.checked = !task.checked;
+            if (task.id !== id) return task;
+
+            if (task.checked.find(date => sameDay(date, activeDate))) task.checked = task.checked.filter((date) => { !sameDay(date, activeDate) });
+            else task.checked.push(activeDate);
             return task;
         });
         setTasks(updatedTasks);

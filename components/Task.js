@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { getBGColor } from '../utilities/Utilities';
+import { sameDay } from '../utilities/Utilities';
 
 export default function Task(props) {
     const [isEditing, setEditing] = useState(false);
@@ -43,10 +44,10 @@ export default function Task(props) {
 
                 <div className="inline-flex items-center ml-4">
                     <input
-                        defaultChecked={props.task.checked}
-                        onChange={() => props.toggleTask(props.task.id)}
+                        checked={props.task.checked.find((date) => sameDay(date, props.activeDate))}
+                        onClick={() => props.toggleTask(props.task.id)}
                         type="checkbox"
-                        className="w-7 h-7 cursor-pointer text-emerald-500 rounded-full bg-white/10 border-0 duration-75 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-[#1d2738] focus:ring-offset-4">
+                        className="w-7 h-7 cursor-pointer text-emerald-500 rounded-full bg-white/10 border-0 duration-75 focus:ring-1 focus:ring-emerald-500 focus:ring-offset-[#1d2738] focus:ring-offset-3">
                     </input>
                 </div>
             </div>
@@ -68,7 +69,7 @@ export default function Task(props) {
                             <input type="text" onChange={handleChange} defaultValue={props.task.name} className="bg-transparent mb-1 w-full border-0 p-0 text-lg outline outline-1 outline-blue-500 rounded-lg px-2"></input>
                             <div className="">
                                 <p className="category text-xs inline p-1 rounded-md" style={{ color: props.category.color, backgroundColor: getBGColor(props.category.color) }}>{props.category.name}</p>
-                                {props.task.tepeatable ? repeatableIcon : null}
+                                {props.task.repeatable ? repeatableIcon : null}
                             </div>
                         </div>
                     </div>
@@ -76,7 +77,7 @@ export default function Task(props) {
 
                 <div className="inline-flex items-center ml-4">
                     <input
-                        defaultChecked={props.task.checked}
+                        defaultChecked={props.task.checked.find((date) => sameDay(date, props.activeDate))}
                         onChange={() => props.toggleTask(props.task.id)}
                         type="checkbox"
                         className="w-7 h-7 flex-initial cursor-pointer text-emerald-500 rounded-full bg-white/10 border-0 duration-75 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-[#1d2738] focus:ring-offset-4">

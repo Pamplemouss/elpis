@@ -13,3 +13,20 @@ export function getBGColor(color) {
 
     return `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`
 }
+
+export function date1BeforeDate2(date1, date2) {
+    var date1Formated = new Date(date1);
+    date1Formated.setHours(0);
+    date1Formated.setMinutes(0);
+    date1Formated.setSeconds(0);
+    date1Formated.setMilliseconds(0);
+
+    var date2Formated = new Date(date2);
+    date2Formated.setHours(0);
+    date2Formated.setMinutes(0);
+    date2Formated.setSeconds(0);
+    date2Formated.setMilliseconds(0);
+
+    if (date1Formated.getTime() <= date2Formated.getTime()) return true;
+    else return false;
+}

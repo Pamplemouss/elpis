@@ -22,8 +22,7 @@ export default function DatesSlider(props) {
                 onClick={changeDate}
                 className={`date group text-white/80 shadow-md relative duration-150 text-center w-12 h-16 rounded-2xl flex flex-col justify-between cursor-pointer
                     ${sameDay(date, props.activeDate) ? "active bg-blue-500 -translate-y-1" : "hover:bg-gray-600 bg-gray-700"}
-                    ${sameDay(date, todayDate) ? (sameDay(props.activeDate, date) ? "today outline outline-2 outline-offset-2 outline-blue-300" : "today outline outline-2 outline-white/50") : null}
-                    ${props.tasks.find(task => sameDay(task.targetDate, date)) ? "" : ""}`}
+                    ${sameDay(date, todayDate) ? (sameDay(props.activeDate, date) ? "today outline outline-2 outline-offset-2 outline-blue-300" : "today outline outline-2 outline-white/50") : null}`}
             >
                 {date.getDate() == 1 &&
                     <div className="flex absolute -top-7 left-3 rounded-lg">
@@ -34,9 +33,11 @@ export default function DatesSlider(props) {
                 <div className="grow inline-flex justify-center items-center capitalize" style={{ fontSize: "0.7em" }}>{weekday}</div>
                 <div className={`dateNumber duration-150 rounded-b-2xl rounded-t-xl h-10 leading-8 font-bold ${sameDay(props.activeDate, date) ? "active bg-blue-600 text-white" : "group-hover:bg-gray-500 bg-gray-600"}`}>{date.getDate()}</div>
                 <span className="slot invisible w-4 h-1 absolute bottom-0 bg-white/70 left-1/2 -translate-x-1/2 rounded-t"></span>
-                {props.tasks.find(task => sameDay(task.targetDate, date)) && !sameDay(props.activeDate, date) ? (
+                
+                {/* Dot meaning a task is starting there */}
+                {/* {props.tasks.find(task => sameDay(task.startDate, date)) && !sameDay(props.activeDate, date) ? (
                     <div className="absolute w-1 h-1 rounded-xl bg-white/50 bottom-1 left-1/2 -translate-x-1/2"></div>
-                ) : null}
+                ) : null} */}
             </div>
         )
     });
@@ -59,6 +60,11 @@ export default function DatesSlider(props) {
             return;
         }
         var newActiveDate = new Date(parseInt(e.target.closest(".date").getAttribute("id")));
+        newActiveDate.setHours(0);
+        newActiveDate.setMinutes(0);
+        newActiveDate.setSeconds(0);
+        newActiveDate.setMilliseconds(0);
+
         props.setActiveDate(newActiveDate);
     }
 
