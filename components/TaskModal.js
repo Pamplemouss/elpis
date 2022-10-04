@@ -1,21 +1,22 @@
-import React, { useState } from "react";
-import Calendar from '../components/Calendar';
+import React, { useEffect, useState } from "react";
+import Calendar from './Calendar';
 import { nanoid } from "nanoid";
 
-export default function AddTaskModal(props) {
-    const [newTask, setNewTask] = useState({
+export default function TaskModal(props) {
+    const [newTask, setNewTask] = useState(props.task ? props.task : {
         id: nanoid(),
         name: "",
         category: null,
         checked: [],
         repeatable: false,
+        repeat: {rule: "", value: ""},
         startDate: new Date()
     });
-    const [repeatRule, setRepeatRule] = useState("daily");
-    const [repeatWeek, setRepeatWeek] = useState([]);
-    const [repeatMonth, setRepeatMonth] = useState([]);
-    const [repeatDay, setRepeatDay] = useState(2);
+    const [repeatWeek, setRepeatWeek] = useState(newTask.repeat.rule === "week" ? newTask.repeat.value : []);
+    const [repeatMonth, setRepeatMonth] = useState(newTask.repeat.rule === "month" ? newTask.repeat.value : []);
+    const [repeatDay, setRepeatDay] = useState(newTask.repeat.rule === "day" ? newTask.repeat.value : 2);
     const [state, setState] = useState(0);
+    const [repeatRuleValid, setRepeatRuleValid] = useState(true);
     const categoriesList = props.categories.map((category) => (
         <div key={category.id} onClick={() => setNewTask({...newTask, category: category.id})} className={`flex shadow-md p-2 rounded-xl justify-between items-center cursor-pointer hover:duration-150 outline-blue-500 ${newTask.category === category.id ? "outline outline-1 outline-offset-2 bg-gray-800/30" : "text-gray-500 bg-gray-500/10 hover:bg-gray-500/20"}`}>
             <p>{category.name}</p>
@@ -30,8 +31,27 @@ export default function AddTaskModal(props) {
     }
 
     function handleChangeRule(e) {
-        setRepeatRule(e.target.value);
+        setNewTask({...newTask, repeat: {...newTask.repeat, rule: e.target.value}});
     }
+
+    useEffect(() => {
+        switch (newTask.repeat.rule) {
+            case "daily":
+                setRepeatRuleValid(true);
+                break;
+            case "week":
+                repeatWeek.length > 0 ? setRepeatRuleValid(true) : setRepeatRuleValid(false);
+                break;
+            case "month":
+                repeatMonth.length > 0 ? setRepeatRuleValid(true) : setRepeatRuleValid(false);
+                break;
+            case "day":
+                repeatDay > 0 ? setRepeatRuleValid(true) : setRepeatRuleValid(false);
+                break;
+            default:
+                break;
+        }
+    }, [newTask, repeatWeek, repeatMonth, repeatDay]);
 
     function handleChangeWeek(e) {
         var day = parseInt(e.target.getAttribute("day"));
@@ -42,22 +62,27 @@ export default function AddTaskModal(props) {
         setRepeatDay(parseInt(e.target.value));
     }
 
-    function addTask() {
-        if (newTask.repeatable) {
-            var value;
-            switch (repeatRule) {
-                case "daily":   value = undefined;      break;
-                case "week":    value = repeatWeek;     break;
-                case "month":   value = repeatMonth;    break;
-                case "day":     value = repeatDay;      break;
-            }
-
-            props.addTask({...newTask, repeat: {
-                rule: repeatRule,
-                value: value
-            }});
+    function returnTask() {
+        var value;
+        switch (newTask.repeat.rule) {
+            case "daily":
+                value = ""
+                break;
+            case "week":
+                value = repeatWeek;
+                break;
+            case "month":
+                value = repeatMonth;
+                break;
+            case "day":
+                value = repeatDay;
+                break;
+            default:
+                break;
         }
-        else props.addTask(newTask);
+
+        var taskToReturn = {...newTask, repeat: {...newTask.repeat, value: value}};
+        props.task ? props.editTask(taskToReturn) : props.addTask(taskToReturn);
     }
 
     function toggleDate(e) {
@@ -67,7 +92,7 @@ export default function AddTaskModal(props) {
 
     const nameCategoryTemplate = (
         <>
-            <div className="mb-7 text-center text-lg">New task</div>
+            <div className="mb-7 text-center text-lg">{props.task ? "Edit Task" : "New task"}</div>
             <div className="flex gap-4">
                 <div className="relative w-full">
                     <input onChange={handleChangeName} value={newTask.name} type="text" className="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " />
@@ -90,13 +115,6 @@ export default function AddTaskModal(props) {
     const weekMiniTemplate = (
         <div className="grid grid-cols-3 gap-3 m-5">
             {[...Array(7)].map((element, index) => {
-                /* var days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
-                return (
-                    <div key={days[index]} className="flex items-center">
-                        <input onChange={handleChangeWeek} id={`checkbox-${days[index]}`} day={days[index]} checked={repeatWeek.includes(days[index])} type="checkbox" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
-                        <label htmlFor={`checkbox-${days[index]}`} className="ml-2 text-sm font-medium text-gray-300 cursor-pointer">{days[index]}</label>
-                    </div>
-                ) */
                 var days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
                 return (
                     <div key={days[index]} className="flex items-center">
@@ -131,28 +149,28 @@ export default function AddTaskModal(props) {
         <>
             <div className="">
                 <div className="flex items-center mb-2">
-                    <input onChange={handleChangeRule} defaultChecked={repeatRule == "daily"} id="default-radio-1" type="radio" value="daily" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
+                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat.rule == "daily" || newTask.repeat.rule == ""} id="default-radio-1" type="radio" value="daily" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
                     <label htmlFor="default-radio-1" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Daily</label>
                 </div>
                 <div className="flex items-center mb-2">
-                    <input onChange={handleChangeRule} defaultChecked={repeatRule == "week"} id="default-radio-2" type="radio" value="week" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
+                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat.rule == "week"} id="default-radio-2" type="radio" value="week" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
                     <label htmlFor="default-radio-2" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Certain days of the week</label>
                 </div>
-                {repeatRule == "week" ? weekMiniTemplate : null}
+                {newTask.repeat.rule == "week" ? weekMiniTemplate : null}
                 <div className="flex items-center mb-2">
-                    <input onChange={handleChangeRule} defaultChecked={repeatRule == "month"} id="default-radio-3" type="radio" value="month" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
+                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat.rule == "month"} id="default-radio-3" type="radio" value="month" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
                     <label htmlFor="default-radio-3" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Certain days of the month</label>
                 </div>
-                {repeatRule == "month" ? monthMiniTemplate : null}
+                {newTask.repeat.rule == "month" ? monthMiniTemplate : null}
                 <div className="flex items-center">
-                    <input onChange={handleChangeRule} defaultChecked={repeatRule == "day"} id="default-radio-4" type="radio" value="day" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
+                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat.rule == "day"} id="default-radio-4" type="radio" value="day" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
                     <label htmlFor="default-radio-4" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Every X days</label>
                 </div>
-                {repeatRule == "day" ? dayMiniTemplate : null}
+                {newTask.repeat.rule == "day" ? dayMiniTemplate : null}
             </div>
             <div className="flex space-x-5 mt-10">
                 <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => setState(state - 1)}>Previous</button>
-                <button className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => setState(state + 1)}>Next</button>
+                <button disabled={!repeatRuleValid} className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => setState(state + 1)}>Next</button>
             </div>
         </>
     );
@@ -163,7 +181,7 @@ export default function AddTaskModal(props) {
             <Calendar activeDate={newTask.startDate} setActiveDate={(date) => setNewTask({...newTask, startDate: date})} />
             <div className="flex space-x-5 mt-10">
                 <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => newTask.repeatable ? setState(state - 1) : setState(state - 2)}>Previous</button>
-                <button className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => {addTask(); props.setShowModal(false);}}>Create</button>
+                <button className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => {returnTask(); props.setShowModal(false);}}>{props.task ? "Edit" : "Create"}</button>
             </div>
         </>
     );

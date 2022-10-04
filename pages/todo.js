@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import { motion, AnimatePresence } from "framer-motion"
 import Task from '../components/Task';
 import DatesSlider from '../components/DatesSlider';
-import AddTaskModal from '../components/AddTaskModal';
+import TaskModal from '../components/TaskModal';
 import CategoriesModal from '../components/CategoriesModal';
 import { sameDay, date1BeforeDate2 } from '../utilities/Utilities';
 
@@ -15,8 +15,8 @@ const TASKS = [
     { id: nanoid(), name: "Vaisselle", category: 6, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "daily" } },
     { id: nanoid(), name: "Jogging", category: 3, checked: [], startDate: new Date(2022, 8, 13), repeatable: true, repeat: { rule: "week", value: [0, 2, 4] } },
     { id: nanoid(), name: "Magie", category: 5, checked: [], startDate: new Date(2022, 8, 11), repeatable: true, repeat: { rule: "day", value: 3 } },
-    { id: nanoid(), name: "Nettoyer douche", category: 0, checked: [new Date(2022, 8, 16)], startDate: new Date(2022, 8, 15), repeatable: false },
-    { id: nanoid(), name: "Piano 777", category: 5, checked: [], startDate: new Date(2022, 8, 16), repeatable: false },
+    { id: nanoid(), name: "Nettoyer douche", category: 0, checked: [new Date(2022, 8, 16)], startDate: new Date(2022, 8, 15), repeatable: false, repeat: {rule: "", value: ""} },
+    { id: nanoid(), name: "Piano 777", category: 5, checked: [], startDate: new Date(2022, 8, 16), repeatable: false, repeat: {rule: "", value: ""} },
 ];
 
 const CATEGORIES = [
@@ -31,17 +31,17 @@ const CATEGORIES = [
 
 export default function Todo() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [showAddModal, setShowAddModal] = useState(false);
+    const [showTaskModal, setShowTaskModal] = useState(false);
     const [showCategoriesModal, setShowCategoriesModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [tasks, setTasks] = useState(TASKS);
     const [categories, setCategories] = useState(CATEGORIES);
     const [idToDelete, setIdToDelete] = useState("");
+    const [taskToEdit, setTaskToEdit] = useState();
     const [activeDate, setActiveDate] = useState(new Date());
     const [toastMessage, setToastMessage] = useState("");
 
     const taskList = tasks.filter((task) => {
-        console.log(task)
         if (!date1BeforeDate2(task.startDate, activeDate)) return;      // Filter if active date is before starting date
 
         if (!task.repeatable && task.checked.length > 0) {
@@ -83,7 +83,7 @@ export default function Todo() {
                 category={category}
                 toggleTask={toggleTask}
                 deleteTask={askDelete}
-                editTask={editTask}
+                editTask={(id) => {setTaskToEdit(tasks.find((task) => task.id == id)); setShowTaskModal(true)}}
             />
         )
     });
@@ -99,12 +99,13 @@ export default function Todo() {
         setTasks(updatedTasks);
     }
 
-    function editTask(id, newName) {
+    function editTask(editedTask) {
         const updatedTasks = tasks.map((task) => {
-            if (task.id === id) task.name = newName;
-            return task;
+            if (task.id === editedTask.id) return editedTask;
+            else return task;
         });
         setTasks(updatedTasks);
+        displayToast("Task edited !");
     }
 
     function askDelete(id) {
@@ -175,12 +176,12 @@ export default function Todo() {
                 <i className="fa-solid fa-tags" style={{ fontSize: "1.2em" }}></i>
             </div>
 
-            <div onClick={() => setShowAddModal(true)} className="fixed bottom-10 right-10 bg-blue-500 w-20 h-20 inline-flex justify-center items-center rounded-2xl cursor-pointer shadow-md hover:bg-blue-700 duration-150">
+            <div onClick={() => {setTaskToEdit(); setShowTaskModal(true) }} className="fixed bottom-10 right-10 bg-blue-500 w-20 h-20 inline-flex justify-center items-center rounded-2xl cursor-pointer shadow-md hover:bg-blue-700 duration-150">
                 <i className="fa-solid fa-plus" style={{ fontSize: "1.5em" }}></i>
             </div>
 
-            {showAddModal ? (
-                <AddTaskModal addTask={addTask} setShowModal={setShowAddModal} categories={categories} />
+            {showTaskModal ? (
+                <TaskModal addTask={addTask} editTask={editTask} setShowModal={setShowTaskModal} categories={categories} task={taskToEdit} />
             ) : null}
 
             {showDeleteModal ? (
