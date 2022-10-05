@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { getBGColor } from '../utilities/Utilities';
 import { sameDay } from '../utilities/Utilities';
+import { motion } from "framer-motion"
 
 export default function Task(props) {
     const repeatableIcon = (
@@ -8,9 +9,15 @@ export default function Task(props) {
             <i className="fa-solid fa-sync text-xs text-slate-400"></i>
         </div>
     );
-
     return (
-        < div className="group w-full relative flex px-24 text-gray-300" >
+        <motion.div className="group w-full relative flex px-24 text-gray-300"
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+            transition={{ x : {duration: 0.3}, opacity: {duration: 0.3}, duration: 0.2 }}
+            layout
+            key={props.task.id}
+        >
             <div onClick={() => props.deleteTask(props.task.id)} className="w-10 h-1/2 absolute top-1/2 -translate-y-1/2 left-0 invisible group-hover:visible transition-colors text-slate-500 hover:text-red-500 duration-150 inline-flex justify-center items-center cursor-pointer">
                 <i className="fa-solid fa-trash-alt text-xl"></i>
             </div>
@@ -40,6 +47,6 @@ export default function Task(props) {
                     </input>
                 </div>
             </div>
-        </div >
+        </motion.div>
     )
 }

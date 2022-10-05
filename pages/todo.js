@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import React, { useState } from "react";
 import { nanoid } from "nanoid";
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
 import Task from '../components/Task';
 import DatesSlider from '../components/DatesSlider';
 import TaskModal from '../components/TaskModal';
@@ -15,8 +15,8 @@ const TASKS = [
     { id: nanoid(), name: "Vaisselle", category: 6, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "daily" } },
     { id: nanoid(), name: "Jogging", category: 3, checked: [], startDate: new Date(2022, 8, 13), repeatable: true, repeat: { rule: "week", value: [0, 2, 4] } },
     { id: nanoid(), name: "Magie", category: 5, checked: [], startDate: new Date(2022, 8, 11), repeatable: true, repeat: { rule: "day", value: 3 } },
-    { id: nanoid(), name: "Nettoyer douche", category: 0, checked: [new Date(2022, 8, 16)], startDate: new Date(2022, 8, 15), repeatable: false, repeat: {rule: "", value: ""} },
-    { id: nanoid(), name: "Piano 777", category: 5, checked: [], startDate: new Date(2022, 8, 16), repeatable: false, repeat: {rule: "", value: ""} },
+    { id: nanoid(), name: "Nettoyer douche", category: 0, checked: [new Date(2022, 8, 16)], startDate: new Date(2022, 8, 15), repeatable: false, repeat: { rule: "", value: "" } },
+    { id: nanoid(), name: "Piano 777", category: 5, checked: [], startDate: new Date(2022, 8, 16), repeatable: false, repeat: { rule: "", value: "" } },
 ];
 
 const CATEGORIES = [
@@ -41,7 +41,9 @@ export default function Todo() {
     const [activeDate, setActiveDate] = useState(new Date());
     const [toastMessage, setToastMessage] = useState("");
 
-    const taskList = tasks.filter((task) => {
+
+    // FILTER TASK FROM ACTIVE DATE
+    const taskListUnsorted = tasks.filter((task) => {
         if (!date1BeforeDate2(task.startDate, activeDate)) return;      // Filter if active date is before starting date
 
         if (!task.repeatable && task.checked.length > 0) {
@@ -73,7 +75,17 @@ export default function Todo() {
             }
         }
         return task;
-    }).map((task) => {
+    });
+
+    // SORT TASKS
+    const taskListFinished = taskListUnsorted.filter((task) => {
+        if (task.checked.find((date) => sameDay(date, activeDate))) return task;
+    });
+    const taskListUnfinished = taskListUnsorted.filter((task) => {
+        if (!task.checked.find((date) => sameDay(date, activeDate))) return task;
+    });
+
+    const taskList = taskListUnfinished.concat(taskListFinished).map((task) => {
         const category = categories.filter(category => { if (category.id === task.category) return category })[0];
         return (
             <Task
@@ -83,7 +95,7 @@ export default function Todo() {
                 category={category}
                 toggleTask={toggleTask}
                 deleteTask={askDelete}
-                editTask={(id) => {setTaskToEdit(tasks.find((task) => task.id == id)); setShowTaskModal(true)}}
+                editTask={(id) => { setTaskToEdit(tasks.find((task) => task.id == id)); setShowTaskModal(true) }}
             />
         )
     });
@@ -162,46 +174,73 @@ export default function Todo() {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
             </Head>
 
-            {/* DATES */}
-            <DatesSlider activeDate={activeDate} setActiveDate={setActiveDate} tasks={tasks} />
+            <div className="flex flex-col w-full h-screen pb-20">
+                {/* DATES */}
+                <DatesSlider activeDate={activeDate} setActiveDate={setActiveDate} tasks={tasks} />
 
-            {/* TASKS LIST */}
-            <div className="flex justify-center">
-                <div className="w-2/5">
-                    {taskList}
+                {/* TASKS LIST */}
+                <div className="flex justify-center overflow-y-scroll h-full">
+                    <div className="w-2/5 relative h-fit
+                        ">
+                        <LayoutGroup>
+                            <AnimatePresence>
+                                {taskList}
+                            </AnimatePresence>
+                        </LayoutGroup>
+                    </div>
                 </div>
             </div>
+
 
             <div onClick={() => setShowCategoriesModal(true)} className="fixed bottom-36 right-10 bg-pink-500 w-12 h-12 inline-flex justify-center items-center rounded-2xl cursor-pointer shadow-md hover:bg-pink-700 duration-150">
                 <i className="fa-solid fa-tags" style={{ fontSize: "1.2em" }}></i>
             </div>
 
-            <div onClick={() => {setTaskToEdit(); setShowTaskModal(true) }} className="fixed bottom-10 right-10 bg-blue-500 w-20 h-20 inline-flex justify-center items-center rounded-2xl cursor-pointer shadow-md hover:bg-blue-700 duration-150">
+            <div onClick={() => { setTaskToEdit(); setShowTaskModal(true) }} className="fixed bottom-10 right-10 bg-blue-500 w-20 h-20 inline-flex justify-center items-center rounded-2xl cursor-pointer shadow-md hover:bg-blue-700 duration-150">
                 <i className="fa-solid fa-plus" style={{ fontSize: "1.5em" }}></i>
             </div>
 
-            {showTaskModal ? (
-                <TaskModal addTask={addTask} editTask={editTask} setShowModal={setShowTaskModal} categories={categories} task={taskToEdit} />
-            ) : null}
+            <AnimatePresence>
+                {showTaskModal ? (
+                    <TaskModal addTask={addTask} editTask={editTask} setShowModal={setShowTaskModal} categories={categories} task={taskToEdit} />
+                ) : null}
+            </AnimatePresence>
 
-            {showDeleteModal ? (
-                <div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
-                    <div className="items-center bg-gray-700 text-gray-300 rounded-lg p-8">
-                        <div className="flex justify-center mb-7">
-                            <i className="fa-solid fa-exclamation-circle" style={{ fontSize: "2em" }}></i>
+            <AnimatePresence>
+                {showDeleteModal ? (
+                    <>
+                        <motion.div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                        ></motion.div>
+                        <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
+                            <motion.div className="items-center bg-gray-700 text-gray-300 rounded-lg p-8"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                                transition={{ duration: 0.3, type: "spring" }}
+                            >
+                                <div className="flex justify-center mb-7">
+                                    <i className="fa-solid fa-exclamation-circle" style={{ fontSize: "2em" }}></i>
+                                </div>
+                                <h3 className="text-lg mb-5">Are you sure you want to delete this task?</h3>
+                                <div className="flex space-x-5">
+                                    <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                                    <button className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2" onClick={() => { deleteTask(); setShowDeleteModal(false) }}>Confirm</button>
+                                </div>
+                            </motion.div>
                         </div>
-                        <h3 className="text-lg mb-5">Are you sure you want to delete this task?</h3>
-                        <div className="flex space-x-5">
-                            <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => setShowDeleteModal(false)}>Cancel</button>
-                            <button className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2" onClick={() => { deleteTask(); setShowDeleteModal(false) }}>Confirm</button>
-                        </div>
-                    </div>
-                </div>
-            ) : null}
+                    </>
+                ) : null}
+            </AnimatePresence>
 
-            {showCategoriesModal ? (
-                <CategoriesModal categories={categories} setShowModal={setShowCategoriesModal} editCategory={editCategory} createCategory={createCategory} deleteCategory={deleteCategory} />
-            ) : null}
+            <AnimatePresence>
+                {showCategoriesModal ? (
+                    <CategoriesModal categories={categories} setShowModal={setShowCategoriesModal} editCategory={editCategory} createCategory={createCategory} deleteCategory={deleteCategory} />
+                ) : null}
+            </AnimatePresence>
 
             <AnimatePresence>
                 {showToast ? (

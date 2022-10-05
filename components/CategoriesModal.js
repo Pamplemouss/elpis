@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion"
 import { nanoid } from "nanoid";
 
 const ICONS = [
@@ -162,17 +163,39 @@ export default function CategoriesModal(props) {
     const TEMPLATES = [categoriesTemplate, editTemplate];
 
     return (
-        <div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
-            <div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-10">
-                <div className="mb-5 text-lg font-bold ">
-                    <i className="fa-solid fa-tags"></i>
-                    <span className="ml-3">Categories</span>
-                </div>
-                {TEMPLATES[state]}
-                <div onClick={() => props.setShowModal(false)} className="w-5 h-5 rounded-lg absolute top-2 right-2 inline-flex justify-center items-center cursor-pointer text-white/30 hover:text-white hover:shadow">
-                    <i className="fa-solid fa-times"></i>
-                </div>
+        <>
+            <motion.div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+            ></motion.div>
+            <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
+                <motion.div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-8 overflow-hidden"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    transition={{ duration: 0.3, type: "spring" }}
+                >
+                    <div className="mb-5 text-lg font-bold ">
+                        <i className="fa-solid fa-tags"></i>
+                        <span className="ml-3">Categories</span>
+                    </div>
+                    <AnimatePresence exitBeforeEnter>
+                        <motion.div key={state}
+                            initial={{ x: 20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: -20, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            {TEMPLATES[state]}
+                        </motion.div>
+                    </AnimatePresence>
+                    <div onClick={() => props.setShowModal(false)} className="w-5 h-5 rounded-lg absolute top-2 right-2 inline-flex justify-center items-center cursor-pointer text-white/30 hover:text-white hover:shadow">
+                        <i className="fa-solid fa-times"></i>
+                    </div>
+                </motion.div>
             </div>
-        </div>
+        </>
     )
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Calendar from '../components/Calendar';
+import { motion, AnimatePresence } from "framer-motion"
 import { sameDay } from '../utilities/Utilities';
 
 export default function DatesSlider(props) {
@@ -33,7 +34,7 @@ export default function DatesSlider(props) {
                 <div className="grow inline-flex justify-center items-center capitalize" style={{ fontSize: "0.7em" }}>{weekday}</div>
                 <div className={`dateNumber duration-150 rounded-b-2xl rounded-t-xl h-10 leading-8 font-bold ${sameDay(props.activeDate, date) ? "active bg-blue-600 text-white" : "group-hover:bg-gray-500 bg-gray-600"}`}>{date.getDate()}</div>
                 <span className="slot invisible w-4 h-1 absolute bottom-0 bg-white/70 left-1/2 -translate-x-1/2 rounded-t"></span>
-                
+
                 {/* Dot meaning a task is starting there */}
                 {/* {props.tasks.find(task => sameDay(task.startDate, date)) && !sameDay(props.activeDate, date) ? (
                     <div className="absolute w-1 h-1 rounded-xl bg-white/50 bottom-1 left-1/2 -translate-x-1/2"></div>
@@ -133,10 +134,10 @@ export default function DatesSlider(props) {
         <>
             <div className="relative">
                 <div className="
-            w-9/12 relative mx-auto rounded-l-2xl mt-10 mb-5
-            before:block before:absolute before:pointer-events-none before:bg-gradient-to-r before:from-slate-900 before:w-24 before:h-full before:left-0 before:top-0 before:z-10
-            after:block after:absolute after:pointer-events-none after:bg-gradient-to-r after:from-slate-900 after:w-24 after:h-full after:right-0 after:top-0 after:z-10 after:scale-x-flip
-            ">
+                    w-9/12 relative mx-auto rounded-l-2xl mt-5 mb-5
+                    before:block before:absolute before:pointer-events-none before:bg-gradient-to-r before:from-slate-900 before:w-24 before:h-full before:left-0 before:top-0 before:z-10
+                    after:block after:absolute after:pointer-events-none after:bg-gradient-to-r after:from-slate-900 after:w-24 after:h-full after:right-0 after:top-0 after:z-10 after:scale-x-flip
+                ">
                     <div
                         id="datesGrid"
                         onMouseMove={onMouseMove}
@@ -152,16 +153,32 @@ export default function DatesSlider(props) {
                     </div>
                 </div>
             </div>
-            {showModal ? (
-                <div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center">
-                    <div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-10">
-                        <Calendar activeDate={props.activeDate} setActiveDate={changeDateCalendar} />
-                        <div onClick={() => setShowModal(false)} className="w-5 h-5 rounded-lg absolute top-2 right-2 inline-flex justify-center items-center cursor-pointer text-white/30 hover:text-white hover:shadow">
-                            <i className="fa-solid fa-times"></i>
+
+            <AnimatePresence>
+                {showModal ? (
+                    <>
+                        <motion.div id="modal" aria-hidden="true" className="z-20 top-0 w-full h-full fixed bg-black/70 place-content-center inline-flex justify-center items-center"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                        ></motion.div>
+                        <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
+                            <motion.div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-10"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                                transition={{ duration: 0.3, type: "spring" }}
+                            >
+                                <Calendar activeDate={props.activeDate} setActiveDate={changeDateCalendar} />
+                                <div onClick={() => setShowModal(false)} className="w-5 h-5 rounded-lg absolute top-2 right-2 inline-flex justify-center items-center cursor-pointer text-white/30 hover:text-white hover:shadow">
+                                    <i className="fa-solid fa-times"></i>
+                                </div>
+                            </motion.div>
                         </div>
-                    </div>
-                </div>
-            ) : null}
+                    </>
+                ) : null}
+            </AnimatePresence>
         </>
 
     )
