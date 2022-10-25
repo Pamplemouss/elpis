@@ -1,0 +1,51 @@
+scalar Time
+
+type Todo {
+  id: ID!
+  name: String!
+  category: Category!
+  checked: [Time]
+  startDate: Time!
+  repeatable: Boolean!
+  repeat: Repeat
+}
+
+type Category {
+  id: ID!
+  name: String!
+  faCode: String!
+  color: String!
+}
+
+type Repeat {
+  rule: String!
+  value: [Int]
+}
+
+input NewTodo {
+  name: String!
+  startDate: Time!
+  repeatable: Boolean!
+  repeat: newRepeat
+}
+
+input newRepeat {
+  rule: String!
+  value: [Int]
+}
+
+input newCategory {
+  name: String!
+  faCode: String!
+  color: String!
+}
+
+type Query {
+  todos: [Todo!]!
+  categories: [Category!]!
+}
+
+type Mutation {
+  createTodo(input: NewTodo!): Todo!
+  createCategory(input: newCategory!): Category!
+}

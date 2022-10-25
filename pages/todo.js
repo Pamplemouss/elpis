@@ -14,7 +14,7 @@ const TASKS = [
     { id: nanoid(), name: "Poussières", category: 1, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "month", value: [1, 15] } },
     { id: nanoid(), name: "Vaisselle", category: 6, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "daily" } },
     { id: nanoid(), name: "Jogging", category: 3, checked: [], startDate: new Date(2022, 8, 13), repeatable: true, repeat: { rule: "week", value: [0, 2, 4] } },
-    { id: nanoid(), name: "Magie", category: 5, checked: [], startDate: new Date(2022, 8, 11), repeatable: true, repeat: { rule: "day", value: 3 } },
+    { id: nanoid(), name: "Magie", category: 5, checked: [], startDate: new Date(2022, 8, 11), repeatable: true, repeat: { rule: "day", value: [3] } },
     { id: nanoid(), name: "Nettoyer douche", category: 0, checked: [new Date(2022, 8, 16)], startDate: new Date(2022, 8, 15), repeatable: false, repeat: { rule: "", value: "" } },
     { id: nanoid(), name: "Piano 777", category: 5, checked: [], startDate: new Date(2022, 8, 16), repeatable: false, repeat: { rule: "", value: "" } },
 ];
@@ -66,7 +66,7 @@ export default function Todo() {
                     var isMultiple = false;
                     do {
                         if (sameDay(testDate, activeDate)) isMultiple = true;
-                        testDate.setDate(testDate.getDate() + task.repeat.value);
+                        testDate.setDate(testDate.getDate() + task.repeat.value[0]);
                     } while (date1BeforeDate2(testDate, activeDate))
                     if (!isMultiple) return;
                     break;
