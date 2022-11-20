@@ -18,6 +18,13 @@ export async function getStaticProps() {
 		        id
 		        name
 		        startDate
+                checked
+                category {
+			        id
+			        name
+			        faCode
+			        color
+		        }
 		        repeatable
 		        repeat {
 		        	rule
@@ -44,7 +51,7 @@ export async function getStaticProps() {
    };
 }
 
-const TASKS = [
+/*const TASKS = [
     { id: nanoid(), name: "Méditation", category: 2, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "daily" } },
     { id: nanoid(), name: "Aspirateur", category: 1, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "week", value: [0, 3] } },
     { id: nanoid(), name: "Poussières", category: 1, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "month", value: [1, 15] } },
@@ -63,15 +70,15 @@ const CATEGORIES = [
     { id: 4, name: "Divertissement", faCode: "fa-film", color: "#0ea5e9" },
     { id: 5, name: "Etudes", faCode: "fa-graduation-cap", color: "#8b5cf6" },
     { id: 6, name: "Alimentation", faCode: "fa-utensils", color: "#ef4444" },
-];
+];*/
 
 export default function Todo({ data }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [showCategoriesModal, setShowCategoriesModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
-    const [tasks, setTasks] = useState(TASKS);
-    const [categories, setCategories] = useState(CATEGORIES);
+    const [tasks, setTasks] = useState(data.todos);
+    const [categories, setCategories] = useState(data.categories);
     const [idToDelete, setIdToDelete] = useState("");
     const [taskToEdit, setTaskToEdit] = useState();
     const [activeDate, setActiveDate] = useState(new Date());
@@ -130,7 +137,7 @@ export default function Todo({ data }) {
                 key={task.id}
                 task={task}
                 activeDate={activeDate}
-                category={category}
+                category={task.category}
                 toggleTask={toggleTask}
                 deleteTask={askDelete}
                 editTask={(id) => { setTaskToEdit(tasks.find((task) => task.id == id)); setShowTaskModal(true) }}
