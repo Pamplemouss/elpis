@@ -2,11 +2,47 @@ import Head from 'next/head'
 import React, { useState } from "react";
 import { nanoid } from "nanoid";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
+import { gql } from "@apollo/client";
+import client from "../apollo-client";
 import Task from '../components/Task';
 import DatesSlider from '../components/DatesSlider';
 import TaskModal from '../components/TaskModal';
 import CategoriesModal from '../components/CategoriesModal';
 import { sameDay, date1BeforeDate2 } from '../utilities/Utilities';
+
+export async function getStaticProps() {
+    const { data } = await client.query({
+      query: gql`
+        query {
+            todos {
+		        id
+		        name
+		        startDate
+		        repeatable
+		        repeat {
+		        	rule
+		        	value
+		        }
+            }
+            categories {
+		        id
+		        name
+		        faCode
+		        color
+            }
+        }
+      `,
+    });
+
+    return {
+      props: {
+        data: {
+            todos: data.todos,
+            categories: data.categories,
+        } 
+      },
+   };
+}
 
 const TASKS = [
     { id: nanoid(), name: "Méditation", category: 2, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "daily" } },
@@ -29,7 +65,7 @@ const CATEGORIES = [
     { id: 6, name: "Alimentation", faCode: "fa-utensils", color: "#ef4444" },
 ];
 
-export default function Todo() {
+export default function Todo({ data }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [showCategoriesModal, setShowCategoriesModal] = useState(false);
@@ -40,6 +76,8 @@ export default function Todo() {
     const [taskToEdit, setTaskToEdit] = useState();
     const [activeDate, setActiveDate] = useState(new Date());
     const [toastMessage, setToastMessage] = useState("");
+
+    console.log(data)
 
 
     // FILTER TASK FROM ACTIVE DATE
