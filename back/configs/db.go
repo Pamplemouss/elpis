@@ -48,21 +48,43 @@ func (db *DB) CreateTodo(input *model.NewTodo) (*model.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	fmt.Printf("%+v\n", input)
+	res, err := collection.InsertOne(ctx, input)
+
+	if err != nil {
+		return nil, err
+	}
+	category, err := db.GetCategoryById(input.CategoryID)
+	todo := &model.Todo{
+		ID:         res.InsertedID.(primitive.ObjectID).Hex(),
+		Name:       input.Name,
+		StartDate:  input.StartDate,
+		Category: 	category,
+		Repeatable: input.Repeatable,
+		Repeat:		(*model.Repeat)(input.Repeat),
+	}
+
+	return todo, err
+}
+
+func (db *DB) CreateCategory(input *model.NewCategory) (*model.Category, error) {
+	collection := colHelper(db, "categories")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	res, err := collection.InsertOne(ctx, input)
 
 	if err != nil {
 		return nil, err
 	}
 
-	todo := &model.Todo{
+	category := &model.Category{
 		ID:         res.InsertedID.(primitive.ObjectID).Hex(),
 		Name:       input.Name,
-		StartDate:  input.StartDate,
-		Repeatable: input.Repeatable,
+		FaCode:  	input.FaCode,
+		Color: 		input.Color,
 	}
 
-	return todo, err
+	return category, err
 }
 
 func (db *DB) GetTodos() ([]*model.Todo, error) {
@@ -72,6 +94,13 @@ func (db *DB) GetTodos() ([]*model.Todo, error) {
 	defer cancel()
 
 	res, err := collection.Find(ctx, bson.M{})
+	
+	/*pipeline := []bson.M{ 
+		bson.M{"$match": bson.M{"_id": bson.TypeObjectID("56b9df0c1e930a99cb2c33e9")}},
+		bson.M{"$lookup": bson.M{ "from": "categories", "localField": "category_id", "foreignField": "_id", "as": "resultField"}},
+   }
+	res2, err := collection.Aggregate(ctx, pipeline)
+   	fmt.Printf("%+v\n", res2)*/
 
 	if err != nil {
 		return nil, err
@@ -83,8 +112,50 @@ func (db *DB) GetTodos() ([]*model.Todo, error) {
 		if err = res.Decode(&singleTodo); err != nil {
 			log.Fatal(err)
 		}
+
 		todos = append(todos, singleTodo)
 	}
 
 	return todos, err
+}
+
+func (db *DB) GetCategories() ([]*model.Category, error) {
+	collection := colHelper(db, "categories")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	var categories []*model.Category
+	defer cancel()
+
+	res, err := collection.Find(ctx, bson.M{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Close(ctx)
+	for res.Next(ctx) {
+		var singleCategory *model.Category
+		if err = res.Decode(&singleCategory); err != nil {
+			log.Fatal(err)
+		}
+		categories = append(categories, singleCategory)
+	}
+
+	return categories, err
+}
+
+func (db *DB) GetCategoryById(id string) (*model.Category, error) {
+    ObjectID, err := primitive.ObjectIDFromHex(id)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    categoriesColl := colHelper(db, "categories")
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+    res := categoriesColl.FindOne(ctx, bson.M{"_id": ObjectID})
+    category := model.Category{ID: id}
+
+    res.Decode(&category)
+
+    return &category, err
 }

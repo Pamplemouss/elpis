@@ -24,6 +24,7 @@ type Repeat {
 
 input NewTodo {
   name: String!
+  categoryId: String!
   startDate: Time!
   repeatable: Boolean!
   repeat: newRepeat
@@ -42,6 +43,7 @@ input newCategory {
 
 type Query {
   todos: [Todo!]!
+  category(_id: String!): Category!
   categories: [Category!]!
 }
 

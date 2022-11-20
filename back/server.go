@@ -9,6 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/Pamplemouss/elpis/back/graph"
 	"github.com/Pamplemouss/elpis/back/graph/generated"
+	"github.com/Pamplemouss/elpis/back/configs"
 )
 
 const defaultPort = "8080"
@@ -19,7 +20,13 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.NewDefaultServer(
+		generated.NewExecutableSchema(
+			generated.Config{
+				Resolvers: graph.NewResolver(configs.ConnectDB()),
+			},
+		),
+	)
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

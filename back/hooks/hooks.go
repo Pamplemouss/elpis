@@ -11,6 +11,7 @@ import (
 
 func mutationsHook(b *modelgen.ModelBuild) *modelgen.ModelBuild {
 	mutateBsonHook(b)
+	mutateOmitEmptyHook(b)
 	mutateSnakeCaseHook(b)
 	return b
 }
