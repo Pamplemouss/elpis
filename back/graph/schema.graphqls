@@ -25,6 +25,7 @@ type Repeat {
 input NewTodo {
   name: String!
   categoryId: String!
+  checked: [Time]
   startDate: Time!
   repeatable: Boolean!
   repeat: newRepeat

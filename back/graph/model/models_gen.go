@@ -14,11 +14,12 @@ type Category struct {
 }
 
 type NewTodo struct {
-	Name       string     `json:"name" bson:"name"`
-	CategoryID string     `json:"category_id" bson:"category_id"`
-	StartDate  time.Time  `json:"start_date" bson:"start_date"`
-	Repeatable bool       `json:"repeatable" bson:"repeatable"`
-	Repeat     *NewRepeat `json:"repeat" bson:"repeat,omitempty"`
+	Name       string       `json:"name" bson:"name"`
+	CategoryID string       `json:"category_id" bson:"category_id"`
+	Checked    []*time.Time `json:"checked" bson:"checked"`
+	StartDate  time.Time    `json:"start_date" bson:"start_date"`
+	Repeatable bool         `json:"repeatable" bson:"repeatable"`
+	Repeat     *NewRepeat   `json:"repeat" bson:"repeat,omitempty"`
 }
 
 type Repeat struct {

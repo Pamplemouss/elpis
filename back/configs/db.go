@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+
 type DB struct {
 	client *mongo.Client
 }
@@ -49,18 +50,23 @@ func (db *DB) CreateTodo(input *model.NewTodo) (*model.Todo, error) {
 	defer cancel()
 
 	res, err := collection.InsertOne(ctx, input)
-
 	if err != nil {
 		return nil, err
 	}
+
 	category, err := db.GetCategoryById(input.CategoryID)
+	if err != nil {
+		return nil, err
+	}
+
 	todo := &model.Todo{
 		ID:         res.InsertedID.(primitive.ObjectID).Hex(),
 		Name:       input.Name,
 		StartDate:  input.StartDate,
-		Category: 	category,
+		Checked:	input.Checked,
+		Category:   category,
 		Repeatable: input.Repeatable,
-		Repeat:		(*model.Repeat)(input.Repeat),
+		Repeat:     (*model.Repeat)(input.Repeat),
 	}
 
 	return todo, err
@@ -78,10 +84,10 @@ func (db *DB) CreateCategory(input *model.NewCategory) (*model.Category, error) 
 	}
 
 	category := &model.Category{
-		ID:         res.InsertedID.(primitive.ObjectID).Hex(),
-		Name:       input.Name,
-		FaCode:  	input.FaCode,
-		Color: 		input.Color,
+		ID:     res.InsertedID.(primitive.ObjectID).Hex(),
+		Name:   input.Name,
+		FaCode: input.FaCode,
+		Color:  input.Color,
 	}
 
 	return category, err
@@ -94,13 +100,6 @@ func (db *DB) GetTodos() ([]*model.Todo, error) {
 	defer cancel()
 
 	res, err := collection.Find(ctx, bson.M{})
-	
-	/*pipeline := []bson.M{ 
-		bson.M{"$match": bson.M{"_id": bson.TypeObjectID("56b9df0c1e930a99cb2c33e9")}},
-		bson.M{"$lookup": bson.M{ "from": "categories", "localField": "category_id", "foreignField": "_id", "as": "resultField"}},
-   }
-	res2, err := collection.Aggregate(ctx, pipeline)
-   	fmt.Printf("%+v\n", res2)*/
 
 	if err != nil {
 		return nil, err
@@ -111,6 +110,11 @@ func (db *DB) GetTodos() ([]*model.Todo, error) {
 		var singleTodo *model.Todo
 		if err = res.Decode(&singleTodo); err != nil {
 			log.Fatal(err)
+		}
+
+		singleTodo.Category, err = db.GetCategoryById(res.Current.Lookup("category_id").StringValue())
+		if err != nil {
+			return nil, err
 		}
 
 		todos = append(todos, singleTodo)
@@ -144,18 +148,18 @@ func (db *DB) GetCategories() ([]*model.Category, error) {
 }
 
 func (db *DB) GetCategoryById(id string) (*model.Category, error) {
-    ObjectID, err := primitive.ObjectIDFromHex(id)
-    if err != nil {
-        log.Fatal(err)
-    }
+	ObjectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    categoriesColl := colHelper(db, "categories")
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
-    res := categoriesColl.FindOne(ctx, bson.M{"_id": ObjectID})
-    category := model.Category{ID: id}
+	categoriesColl := colHelper(db, "categories")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	res := categoriesColl.FindOne(ctx, bson.M{"_id": ObjectID})
+	category := model.Category{ID: id}
 
-    res.Decode(&category)
+	res.Decode(&category)
 
-    return &category, err
+	return &category, err
 }
