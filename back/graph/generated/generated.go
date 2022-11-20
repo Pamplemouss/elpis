@@ -343,6 +343,7 @@ type Repeat {
 input NewTodo {
   name: String!
   categoryId: String!
+  checked: [Time]
   startDate: Time!
   repeatable: Boolean!
   repeat: newRepeat
@@ -3277,7 +3278,7 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "categoryId", "startDate", "repeatable", "repeat"}
+	fieldsInOrder := [...]string{"name", "categoryId", "checked", "startDate", "repeatable", "repeat"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3297,6 +3298,14 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryId"))
 			it.CategoryID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "checked":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("checked"))
+			it.Checked, err = ec.unmarshalOTime2ᚕᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
