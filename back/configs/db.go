@@ -63,7 +63,6 @@ func (db *DB) CreateTodo(input *model.NewTodo) (*model.Todo, error) {
 		ID:         res.InsertedID.(primitive.ObjectID).Hex(),
 		Name:       input.Name,
 		StartDate:  input.StartDate,
-		Checked:	input.Checked,
 		Category:   category,
 		Repeatable: input.Repeatable,
 		Repeat:     (*model.Repeat)(input.Repeat),
@@ -115,6 +114,10 @@ func (db *DB) GetTodos() ([]*model.Todo, error) {
 		singleTodo.Category, err = db.GetCategoryById(res.Current.Lookup("category_id").StringValue())
 		if err != nil {
 			return nil, err
+		}
+
+		if singleTodo.Checked == nil {
+			singleTodo.Checked = make([]*time.Time, 0)
 		}
 
 		todos = append(todos, singleTodo)
