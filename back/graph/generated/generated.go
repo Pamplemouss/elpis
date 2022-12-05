@@ -53,8 +53,13 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateCategory func(childComplexity int, input model.NewCategory) int
-		CreateTodo     func(childComplexity int, input model.NewTodo) int
+		CreateCategory    func(childComplexity int, input model.NewCategory) int
+		CreateTodo        func(childComplexity int, input model.NewTodo) int
+		EditTodoCategory  func(childComplexity int, input model.EditTodoCategory) int
+		EditTodoName      func(childComplexity int, input model.EditTodoName) int
+		EditTodoRepeat    func(childComplexity int, input model.EditTodoRepeat) int
+		EditTodoStartDate func(childComplexity int, input model.EditTodoStartDate) int
+		ToggleCheck       func(childComplexity int, input model.ToggleCheck) int
 	}
 
 	Query struct {
@@ -82,6 +87,11 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error)
 	CreateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error)
+	EditTodoName(ctx context.Context, input model.EditTodoName) (*model.Todo, error)
+	EditTodoCategory(ctx context.Context, input model.EditTodoCategory) (*model.Todo, error)
+	EditTodoStartDate(ctx context.Context, input model.EditTodoStartDate) (*model.Todo, error)
+	EditTodoRepeat(ctx context.Context, input model.EditTodoRepeat) (*model.Todo, error)
+	ToggleCheck(ctx context.Context, input model.ToggleCheck) (*model.Todo, error)
 }
 type QueryResolver interface {
 	Todos(ctx context.Context) ([]*model.Todo, error)
@@ -155,6 +165,66 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(model.NewTodo)), true
+
+	case "Mutation.editTodoCategory":
+		if e.complexity.Mutation.EditTodoCategory == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_editTodoCategory_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.EditTodoCategory(childComplexity, args["input"].(model.EditTodoCategory)), true
+
+	case "Mutation.editTodoName":
+		if e.complexity.Mutation.EditTodoName == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_editTodoName_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.EditTodoName(childComplexity, args["input"].(model.EditTodoName)), true
+
+	case "Mutation.editTodoRepeat":
+		if e.complexity.Mutation.EditTodoRepeat == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_editTodoRepeat_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.EditTodoRepeat(childComplexity, args["input"].(model.EditTodoRepeat)), true
+
+	case "Mutation.editTodoStartDate":
+		if e.complexity.Mutation.EditTodoStartDate == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_editTodoStartDate_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.EditTodoStartDate(childComplexity, args["input"].(model.EditTodoStartDate)), true
+
+	case "Mutation.toggleCheck":
+		if e.complexity.Mutation.ToggleCheck == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_toggleCheck_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ToggleCheck(childComplexity, args["input"].(model.ToggleCheck)), true
 
 	case "Query.categories":
 		if e.complexity.Query.Categories == nil {
@@ -254,8 +324,15 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputNewTodo,
+		ec.unmarshalInputeditRepeat,
+		ec.unmarshalInputeditTodo,
+		ec.unmarshalInputeditTodoCategory,
+		ec.unmarshalInputeditTodoName,
+		ec.unmarshalInputeditTodoRepeat,
+		ec.unmarshalInputeditTodoStartDate,
 		ec.unmarshalInputnewCategory,
 		ec.unmarshalInputnewRepeat,
+		ec.unmarshalInputtoggleCheck,
 	)
 	first := true
 
@@ -359,6 +436,46 @@ input newCategory {
   color: String!
 }
 
+input editTodo {
+  id: ID!
+  name: String
+  categoryId: String
+  startDate: Time
+  repeatable: Boolean
+  repeat: editRepeat
+}
+
+input editTodoName {
+  id: ID!
+  name: String!
+}
+
+input editTodoRepeat {
+  id: ID!
+  repeatable: Boolean
+  repeat: editRepeat
+}
+
+input editTodoStartDate {
+  id: ID!
+  startDate: Time
+}
+
+input editTodoCategory {
+  id: ID!
+  categoryId: String
+}
+
+input editRepeat {
+  rule: String!
+  value: [Int]
+}
+
+input toggleCheck {
+  id: ID!
+  date: Time
+}
+
 type Query {
   todos: [Todo!]!
   category(_id: String!): Category!
@@ -368,6 +485,11 @@ type Query {
 type Mutation {
   createTodo(input: NewTodo!): Todo!
   createCategory(input: newCategory!): Category!
+  editTodoName(input: editTodoName!): Todo!
+  editTodoCategory(input: editTodoCategory!): Todo!
+  editTodoStartDate(input: editTodoStartDate!): Todo!
+  editTodoRepeat(input: editTodoRepeat!): Todo!
+  toggleCheck(input: toggleCheck!): Todo!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -398,6 +520,81 @@ func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewTodo2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐNewTodo(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_editTodoCategory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EditTodoCategory
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNeditTodoCategory2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditTodoCategory(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_editTodoName_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EditTodoName
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNeditTodoName2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditTodoName(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_editTodoRepeat_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EditTodoRepeat
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNeditTodoRepeat2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditTodoRepeat(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_editTodoStartDate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.EditTodoStartDate
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNeditTodoStartDate2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditTodoStartDate(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_toggleCheck_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.ToggleCheck
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNtoggleCheck2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐToggleCheck(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -780,6 +977,361 @@ func (ec *executionContext) fieldContext_Mutation_createCategory(ctx context.Con
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createCategory_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_editTodoName(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_editTodoName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().EditTodoName(rctx, fc.Args["input"].(model.EditTodoName))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Todo)
+	fc.Result = res
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_editTodoName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Todo_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Todo_name(ctx, field)
+			case "category":
+				return ec.fieldContext_Todo_category(ctx, field)
+			case "checked":
+				return ec.fieldContext_Todo_checked(ctx, field)
+			case "startDate":
+				return ec.fieldContext_Todo_startDate(ctx, field)
+			case "repeatable":
+				return ec.fieldContext_Todo_repeatable(ctx, field)
+			case "repeat":
+				return ec.fieldContext_Todo_repeat(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_editTodoName_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_editTodoCategory(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_editTodoCategory(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().EditTodoCategory(rctx, fc.Args["input"].(model.EditTodoCategory))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Todo)
+	fc.Result = res
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_editTodoCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Todo_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Todo_name(ctx, field)
+			case "category":
+				return ec.fieldContext_Todo_category(ctx, field)
+			case "checked":
+				return ec.fieldContext_Todo_checked(ctx, field)
+			case "startDate":
+				return ec.fieldContext_Todo_startDate(ctx, field)
+			case "repeatable":
+				return ec.fieldContext_Todo_repeatable(ctx, field)
+			case "repeat":
+				return ec.fieldContext_Todo_repeat(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_editTodoCategory_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_editTodoStartDate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_editTodoStartDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().EditTodoStartDate(rctx, fc.Args["input"].(model.EditTodoStartDate))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Todo)
+	fc.Result = res
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_editTodoStartDate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Todo_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Todo_name(ctx, field)
+			case "category":
+				return ec.fieldContext_Todo_category(ctx, field)
+			case "checked":
+				return ec.fieldContext_Todo_checked(ctx, field)
+			case "startDate":
+				return ec.fieldContext_Todo_startDate(ctx, field)
+			case "repeatable":
+				return ec.fieldContext_Todo_repeatable(ctx, field)
+			case "repeat":
+				return ec.fieldContext_Todo_repeat(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_editTodoStartDate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_editTodoRepeat(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_editTodoRepeat(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().EditTodoRepeat(rctx, fc.Args["input"].(model.EditTodoRepeat))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Todo)
+	fc.Result = res
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_editTodoRepeat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Todo_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Todo_name(ctx, field)
+			case "category":
+				return ec.fieldContext_Todo_category(ctx, field)
+			case "checked":
+				return ec.fieldContext_Todo_checked(ctx, field)
+			case "startDate":
+				return ec.fieldContext_Todo_startDate(ctx, field)
+			case "repeatable":
+				return ec.fieldContext_Todo_repeatable(ctx, field)
+			case "repeat":
+				return ec.fieldContext_Todo_repeat(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_editTodoRepeat_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_toggleCheck(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_toggleCheck(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ToggleCheck(rctx, fc.Args["input"].(model.ToggleCheck))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Todo)
+	fc.Result = res
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_toggleCheck(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Todo_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Todo_name(ctx, field)
+			case "category":
+				return ec.fieldContext_Todo_category(ctx, field)
+			case "checked":
+				return ec.fieldContext_Todo_checked(ctx, field)
+			case "startDate":
+				return ec.fieldContext_Todo_startDate(ctx, field)
+			case "repeatable":
+				return ec.fieldContext_Todo_repeatable(ctx, field)
+			case "repeat":
+				return ec.fieldContext_Todo_repeat(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_toggleCheck_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -3330,6 +3882,262 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputeditRepeat(ctx context.Context, obj interface{}) (model.EditRepeat, error) {
+	var it model.EditRepeat
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"rule", "value"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "rule":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rule"))
+			it.Rule, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "value":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
+			it.Value, err = ec.unmarshalOInt2ᚕᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputeditTodo(ctx context.Context, obj interface{}) (model.EditTodo, error) {
+	var it model.EditTodo
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "name", "categoryId", "startDate", "repeatable", "repeat"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "categoryId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryId"))
+			it.CategoryID, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "startDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startDate"))
+			it.StartDate, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "repeatable":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("repeatable"))
+			it.Repeatable, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "repeat":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("repeat"))
+			it.Repeat, err = ec.unmarshalOeditRepeat2ᚖgithubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditRepeat(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputeditTodoCategory(ctx context.Context, obj interface{}) (model.EditTodoCategory, error) {
+	var it model.EditTodoCategory
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "categoryId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "categoryId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryId"))
+			it.CategoryID, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputeditTodoName(ctx context.Context, obj interface{}) (model.EditTodoName, error) {
+	var it model.EditTodoName
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputeditTodoRepeat(ctx context.Context, obj interface{}) (model.EditTodoRepeat, error) {
+	var it model.EditTodoRepeat
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "repeatable", "repeat"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "repeatable":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("repeatable"))
+			it.Repeatable, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "repeat":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("repeat"))
+			it.Repeat, err = ec.unmarshalOeditRepeat2ᚖgithubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditRepeat(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputeditTodoStartDate(ctx context.Context, obj interface{}) (model.EditTodoStartDate, error) {
+	var it model.EditTodoStartDate
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "startDate"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "startDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("startDate"))
+			it.StartDate, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputnewCategory(ctx context.Context, obj interface{}) (model.NewCategory, error) {
 	var it model.NewCategory
 	asMap := map[string]interface{}{}
@@ -3401,6 +4209,42 @@ func (ec *executionContext) unmarshalInputnewRepeat(ctx context.Context, obj int
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
 			it.Value, err = ec.unmarshalOInt2ᚕᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputtoggleCheck(ctx context.Context, obj interface{}) (model.ToggleCheck, error) {
+	var it model.ToggleCheck
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "date"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "date":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+			it.Date, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3499,6 +4343,51 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createCategory(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "editTodoName":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_editTodoName(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "editTodoCategory":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_editTodoCategory(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "editTodoStartDate":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_editTodoStartDate(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "editTodoRepeat":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_editTodoRepeat(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "toggleCheck":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_toggleCheck(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -4474,8 +5363,33 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
+func (ec *executionContext) unmarshalNeditTodoCategory2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditTodoCategory(ctx context.Context, v interface{}) (model.EditTodoCategory, error) {
+	res, err := ec.unmarshalInputeditTodoCategory(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNeditTodoName2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditTodoName(ctx context.Context, v interface{}) (model.EditTodoName, error) {
+	res, err := ec.unmarshalInputeditTodoName(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNeditTodoRepeat2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditTodoRepeat(ctx context.Context, v interface{}) (model.EditTodoRepeat, error) {
+	res, err := ec.unmarshalInputeditTodoRepeat(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNeditTodoStartDate2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditTodoStartDate(ctx context.Context, v interface{}) (model.EditTodoStartDate, error) {
+	res, err := ec.unmarshalInputeditTodoStartDate(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNnewCategory2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐNewCategory(ctx context.Context, v interface{}) (model.NewCategory, error) {
 	res, err := ec.unmarshalInputnewCategory(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNtoggleCheck2githubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐToggleCheck(ctx context.Context, v interface{}) (model.ToggleCheck, error) {
+	res, err := ec.unmarshalInputtoggleCheck(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -4824,6 +5738,14 @@ func (ec *executionContext) marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 		return graphql.Null
 	}
 	return ec.___Type(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOeditRepeat2ᚖgithubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐEditRepeat(ctx context.Context, v interface{}) (*model.EditRepeat, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputeditRepeat(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOnewRepeat2ᚖgithubᚗcomᚋPamplemoussᚋelpisᚋbackᚋgraphᚋmodelᚐNewRepeat(ctx context.Context, v interface{}) (*model.NewRepeat, error) {
