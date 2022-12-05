@@ -13,7 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
 type DB struct {
 	client *mongo.Client
 }
@@ -24,7 +23,8 @@ func ConnectDB() *DB {
 		log.Fatal(err)
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
@@ -42,6 +42,21 @@ func ConnectDB() *DB {
 
 func colHelper(db *DB, collectionName string) *mongo.Collection {
 	return db.client.Database("Elpis").Collection(collectionName)
+}
+
+func (db *DB) getTodoById(id string) (*model.Todo, error) {
+	ObjectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	todosColl := colHelper(db, "todos")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	res := todosColl.FindOne(ctx, bson.M{"_id": ObjectID})
+	todo := model.Todo{ID: id}
+	res.Decode(&todo)
+
+	return &todo, err
 }
 
 func (db *DB) CreateTodo(input *model.NewTodo) (*model.Todo, error) {
@@ -126,6 +141,134 @@ func (db *DB) GetTodos() ([]*model.Todo, error) {
 	return todos, err
 }
 
+func (db *DB) EditTodoName(input *model.EditTodoName) (*model.Todo, error) {
+	collection := colHelper(db, "todos")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	id, err := primitive.ObjectIDFromHex(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{"_id", id}}
+	update := bson.M{"$set": bson.M{"name": input.Name}}
+
+	res, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(res.ModifiedCount)
+
+	todo, err := db.getTodoById(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return todo, err
+}
+
+func (db *DB) EditTodoCategory(input *model.EditTodoCategory) (*model.Todo, error) {
+	collection := colHelper(db, "todos")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	id, err := primitive.ObjectIDFromHex(input.ID)
+	if err != nil {
+		return nil, err
+	}
+	_, err = db.GetCategoryById(*input.CategoryID)
+	if (err != nil) {
+		return nil, err
+	}
+
+	filter := bson.D{{"_id", id}}
+	update := bson.M{"$set": bson.M{"category_id": input.CategoryID}}
+
+	res, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(res.ModifiedCount)
+
+	todo, err := db.getTodoById(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return todo, err
+}
+
+func (db *DB) EditTodoStartDate(input *model.EditTodoStartDate) (*model.Todo, error) {
+	collection := colHelper(db, "todos")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	id, err := primitive.ObjectIDFromHex(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{"_id", id}}
+	update := bson.M{"$set": bson.M{"start_date": input.StartDate}}
+
+	res, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(res.ModifiedCount)
+
+	todo, err := db.getTodoById(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return todo, err
+}
+
+func (db *DB) EditTodoRepeat(input *model.EditTodoRepeat) (*model.Todo, error) {
+	if (!*input.Repeatable && input.Repeat != nil) {
+		return nil, nil
+	}
+	collection := colHelper(db, "todos")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	id, err := primitive.ObjectIDFromHex(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{"_id", id}}
+	set := bson.M{}
+	unset := bson.M{}
+	if (input.Repeat == nil) {
+		if (input.Repeatable != nil) {
+			set = bson.M{"repeatable": input.Repeatable}
+		}
+		unset = bson.M{"repeat": ""}
+	} else {
+		if (input.Repeatable != nil) {
+			set = bson.M{"repeatable": input.Repeatable, "repeat": input.Repeat}
+		} else {
+			set = bson.M{"repeat": input.Repeat}
+		}
+	}
+
+	res, err := collection.UpdateOne(ctx, filter, bson.M{"$set": set, "$unset": unset})
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(res.ModifiedCount)
+
+	todo, err := db.getTodoById(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return todo, err
+}
+
 func (db *DB) GetCategories() ([]*model.Category, error) {
 	collection := colHelper(db, "categories")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -153,15 +296,19 @@ func (db *DB) GetCategories() ([]*model.Category, error) {
 func (db *DB) GetCategoryById(id string) (*model.Category, error) {
 	ObjectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	categoriesColl := colHelper(db, "categories")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	res := categoriesColl.FindOne(ctx, bson.M{"_id": ObjectID})
-	category := model.Category{ID: id}
 
+	res := categoriesColl.FindOne(ctx, bson.M{"_id": ObjectID})
+	if (res.Err() != nil) {
+		return nil, res.Err()
+	}
+
+	category := model.Category{ID: id}
 	res.Decode(&category)
 
 	return &category, err

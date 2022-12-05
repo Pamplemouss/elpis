@@ -41,6 +41,41 @@ input newCategory {
   color: String!
 }
 
+input editTodo {
+  id: ID!
+  name: String
+  categoryId: String
+  startDate: Time
+  repeatable: Boolean
+  repeat: editRepeat
+}
+
+input editTodoName {
+  id: ID!
+  name: String!
+}
+
+input editTodoRepeat {
+  id: ID!
+  repeatable: Boolean
+  repeat: editRepeat
+}
+
+input editTodoStartDate {
+  id: ID!
+  startDate: Time
+}
+
+input editTodoCategory {
+  id: ID!
+  categoryId: String
+}
+
+input editRepeat {
+  rule: String!
+  value: [Int]
+}
+
 type Query {
   todos: [Todo!]!
   category(_id: String!): Category!
@@ -50,4 +85,8 @@ type Query {
 type Mutation {
   createTodo(input: NewTodo!): Todo!
   createCategory(input: newCategory!): Category!
+  editTodoName(input: editTodoName!): Todo!
+  editTodoCategory(input: editTodoCategory!): Todo!
+  editTodoStartDate(input: editTodoStartDate!): Todo!
+  editTodoRepeat(input: editTodoRepeat!): Todo!
 }

@@ -18,7 +18,7 @@ type NewTodo struct {
 	CategoryID string     `json:"category_id" bson:"category_id"`
 	StartDate  time.Time  `json:"start_date" bson:"start_date"`
 	Repeatable bool       `json:"repeatable" bson:"repeatable"`
-	Repeat     *NewRepeat `json:"repeat" bson:"repeat,omitempty"`
+	Repeat     *NewRepeat `json:"repeat" bson:"repeat"`
 }
 
 type Repeat struct {
@@ -34,6 +34,41 @@ type Todo struct {
 	StartDate  time.Time    `json:"start_date" bson:"start_date"`
 	Repeatable bool         `json:"repeatable" bson:"repeatable"`
 	Repeat     *Repeat      `json:"repeat" bson:"repeat"`
+}
+
+type EditRepeat struct {
+	Rule  string `json:"rule" bson:"rule"`
+	Value []*int `json:"value" bson:"value"`
+}
+
+type EditTodo struct {
+	ID         string      `json:"id" bson:"_id"`
+	Name       *string     `json:"name" bson:"name"`
+	CategoryID *string     `json:"category_id" bson:"category_id"`
+	StartDate  *time.Time  `json:"start_date" bson:"start_date"`
+	Repeatable *bool       `json:"repeatable" bson:"repeatable"`
+	Repeat     *EditRepeat `json:"repeat" bson:"repeat"`
+}
+
+type EditTodoCategory struct {
+	ID         string  `json:"id" bson:"_id"`
+	CategoryID *string `json:"category_id" bson:"category_id"`
+}
+
+type EditTodoName struct {
+	ID   string `json:"id" bson:"_id"`
+	Name string `json:"name" bson:"name"`
+}
+
+type EditTodoRepeat struct {
+	ID         string      `json:"id" bson:"_id"`
+	Repeatable *bool       `json:"repeatable" bson:"repeatable"`
+	Repeat     *EditRepeat `json:"repeat" bson:"repeat"`
+}
+
+type EditTodoStartDate struct {
+	ID        string     `json:"id" bson:"_id"`
+	StartDate *time.Time `json:"start_date" bson:"start_date"`
 }
 
 type NewCategory struct {

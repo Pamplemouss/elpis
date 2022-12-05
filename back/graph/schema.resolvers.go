@@ -20,6 +20,26 @@ func (r *mutationResolver) CreateCategory(ctx context.Context, input model.NewCa
 	return r.db.CreateCategory(&input)
 }
 
+// EditTodoName is the resolver for the editTodoName field.
+func (r *mutationResolver) EditTodoName(ctx context.Context, input model.EditTodoName) (*model.Todo, error) {
+	return r.db.EditTodoName(&input)
+}
+
+// EditTodoCategory is the resolver for the editTodoCategory field.
+func (r *mutationResolver) EditTodoCategory(ctx context.Context, input model.EditTodoCategory) (*model.Todo, error) {
+	return r.db.EditTodoCategory(&input)
+}
+
+// EditTodoStartDate is the resolver for the editTodoStartDate field.
+func (r *mutationResolver) EditTodoStartDate(ctx context.Context, input model.EditTodoStartDate) (*model.Todo, error) {
+	return r.db.EditTodoStartDate(&input)
+}
+
+// EditTodoRepeat is the resolver for the editTodoRepeat field.
+func (r *mutationResolver) EditTodoRepeat(ctx context.Context, input model.EditTodoRepeat) (*model.Todo, error) {
+	return r.db.EditTodoRepeat(&input)
+}
+
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	return r.db.GetTodos()
