@@ -81,3 +81,8 @@ type NewRepeat struct {
 	Rule  string `json:"rule" bson:"rule"`
 	Value []*int `json:"value" bson:"value"`
 }
+
+type ToggleCheck struct {
+	ID   string     `json:"id" bson:"_id"`
+	Date *time.Time `json:"date" bson:"date"`
+}

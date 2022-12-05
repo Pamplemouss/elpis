@@ -76,6 +76,11 @@ input editRepeat {
   value: [Int]
 }
 
+input toggleCheck {
+  id: ID!
+  date: Time
+}
+
 type Query {
   todos: [Todo!]!
   category(_id: String!): Category!
@@ -89,4 +94,5 @@ type Mutation {
   editTodoCategory(input: editTodoCategory!): Todo!
   editTodoStartDate(input: editTodoStartDate!): Todo!
   editTodoRepeat(input: editTodoRepeat!): Todo!
+  toggleCheck(input: toggleCheck!): Todo!
 }

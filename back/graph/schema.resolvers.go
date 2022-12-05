@@ -40,6 +40,11 @@ func (r *mutationResolver) EditTodoRepeat(ctx context.Context, input model.EditT
 	return r.db.EditTodoRepeat(&input)
 }
 
+// ToggleCheck is the resolver for the toggleCheck field.
+func (r *mutationResolver) ToggleCheck(ctx context.Context, input model.ToggleCheck) (*model.Todo, error) {
+	return r.db.ToggleCheck(&input)
+}
+
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	return r.db.GetTodos()
