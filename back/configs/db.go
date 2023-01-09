@@ -44,7 +44,7 @@ func colHelper(db *DB, collectionName string) *mongo.Collection {
 	return db.client.Database("Elpis").Collection(collectionName)
 }
 
-func (db *DB) getTodoById(id string) (*model.Todo, error) {
+func (db *DB) GetTodoById(id string) (*model.Todo, error) {
 	ObjectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		log.Fatal(err)
@@ -166,7 +166,7 @@ func (db *DB) EditTodo(input *model.EditTodo) (*model.Todo, error) {
 	}
 	fmt.Println(res.ModifiedCount)
 
-	todo, err := db.getTodoById(input.ID)
+	todo, err := db.GetTodoById(input.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -220,6 +220,38 @@ func (db *DB) GetCategoryById(id string) (*model.Category, error) {
 	return &category, err
 }
 
+func (db *DB) EditCategory(input *model.EditCategory) (*model.Category, error) {
+	collection := colHelper(db, "categories")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	id, err := primitive.ObjectIDFromHex(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{"_id", id}}
+	update := bson.M{"$set": bson.M{
+		"name":        input.Name,
+		"fa_code":  input.FaCode,
+		"color":  input.Color,
+	}}
+
+	res, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(res.ModifiedCount)
+
+	category, err := db.GetCategoryById(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+
+	return category, err
+}
+
 func (db *DB) ToggleCheck(input *model.ToggleCheck) (*model.Todo, error) {
 	collection := colHelper(db, "todos")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -230,7 +262,7 @@ func (db *DB) ToggleCheck(input *model.ToggleCheck) (*model.Todo, error) {
 		return nil, err
 	}
 
-	todoScan, err := db.getTodoById(input.TodoID)
+	todoScan, err := db.GetTodoById(input.TodoID)
 	if err != nil {
 		return nil, err
 	}
@@ -251,7 +283,7 @@ func (db *DB) ToggleCheck(input *model.ToggleCheck) (*model.Todo, error) {
 	}
 	fmt.Println(res.ModifiedCount)
 
-	todo, err := db.getTodoById(input.TodoID)
+	todo, err := db.GetTodoById(input.TodoID)
 	if err != nil {
 		return nil, err
 	}

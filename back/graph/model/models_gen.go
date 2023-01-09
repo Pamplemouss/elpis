@@ -9,6 +9,13 @@ type Category struct {
 	Color  string `json:"color" bson:"color"`
 }
 
+type EditCategory struct {
+	ID     string  `json:"id" bson:"_id"`
+	Name   *string `json:"name" bson:"name"`
+	FaCode *string `json:"fa_code" bson:"fa_code"`
+	Color  *string `json:"color" bson:"color"`
+}
+
 type EditTodo struct {
 	ID         string      `json:"id" bson:"_id"`
 	Name       *string     `json:"name" bson:"name"`

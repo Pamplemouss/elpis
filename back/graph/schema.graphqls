@@ -50,6 +50,13 @@ input EditTodo {
   repeat: editRepeat
 }
 
+input EditCategory {
+  id: ID!
+  name: String
+  faCode: String
+  color: String
+}
+
 input editRepeat {
   rule: String!
   value: [Int]
@@ -70,5 +77,6 @@ type Mutation {
   createTodo(input: NewTodo!): Todo!
   createCategory(input: newCategory!): Category!
   editTodo(input: EditTodo!): Todo!
+  editCategory(input: EditCategory!): Category!
   toggleCheck(input: toggleCheck!): Todo!
 }

@@ -8,7 +8,7 @@ import TaskModal from '../components/TaskModal';
 import CategoriesModal from '../components/CategoriesModal';
 import { sameDay, date1BeforeDate2, initDateToMidnight } from '../utilities/Utilities';
 import { TodosQuery, CategoriesQuery } from '../utilities/Queries';
-import { EditTodoMutation, ToggleTodoMutation } from '../utilities/Mutations';
+import { EditTodoMutation, EditCategoryMutation, ToggleTodoMutation } from '../utilities/Mutations';
 
 
 export default function Todo() {
@@ -18,7 +18,8 @@ export default function Todo() {
     const [showToast, setShowToast] = useState(false);
     const {loading: todosLoading, error: todosError, data: todosData} = useQuery(TodosQuery);
     const {loading: categoriesLoading, error: categoriesError, data: categoriesData} = useQuery(CategoriesQuery);
-    const [editMutate] = useMutation(EditTodoMutation);
+    const [editTodoMutate] = useMutation(EditTodoMutation);
+    const [editCategoryMutate] = useMutation(EditCategoryMutation);
     const [toggleMutate] = useMutation(ToggleTodoMutation);
     const [idToDelete, setIdToDelete] = useState("");
     const [taskToEdit, setTaskToEdit] = useState();
@@ -108,7 +109,7 @@ export default function Todo() {
                 value: editedTask.repeat.value == "" ? null : editedTask.repeat.value
             }
         }
-        editMutate({variables: {input: toSend}});
+        editTodoMutate({variables: {input: toSend}});
         displayToast("Task edited !");
     }
 
@@ -138,11 +139,8 @@ export default function Todo() {
     }
 
     function editCategory(editedCategory) {
-        const updatedCategories = categories.map((category) => {
-            if (category.id === editedCategory.id) category = editedCategory;
-            return category;
-        });
-        setCategories(updatedCategories);
+        editCategoryMutate({variables: {input: editedCategory}});
+        displayToast("Category edited !");
     }
 
     function createCategory(newCategory) {
