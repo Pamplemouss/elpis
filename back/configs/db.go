@@ -86,6 +86,26 @@ func (db *DB) CreateTodo(input *model.NewTodo) (*model.Todo, error) {
 	return todo, err
 }
 
+func (db *DB) DeleteTodo(input *string) (bool, error) {
+	collection := colHelper(db, "todos")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	
+	id, err := primitive.ObjectIDFromHex(*input)
+	if err != nil {
+		return false, err
+	}
+
+	filter := bson.D{{"_id", id}}
+
+	res, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return false, err
+	}
+
+	return (res.DeletedCount > 0), nil
+}
+
 func (db *DB) CreateCategory(input *model.NewCategory) (*model.Category, error) {
 	collection := colHelper(db, "categories")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -107,6 +127,42 @@ func (db *DB) CreateCategory(input *model.NewCategory) (*model.Category, error) 
 	return category, err
 }
 
+func (db *DB) DeleteCategory(input *string) (bool, error) {
+	collection := colHelper(db, "categories")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	
+	id, err := primitive.ObjectIDFromHex(*input)
+	if err != nil  {
+		return false, err
+	}
+
+	filter := bson.D{{"_id", id}}
+	
+	res, err := collection.DeleteOne(ctx, filter)
+	if (err != nil || res.DeletedCount == 0) {
+		return false, err
+	}
+
+
+	// Update todos that had this category
+	collection = colHelper(db, "todos")
+	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter = bson.D{{"category_id", *input}}
+	update := bson.A{
+		bson.D{{"$set", bson.D{{"category_id", "0"}}}},
+	}
+	resa, err := collection.UpdateMany(ctx, filter, update)
+	if err != nil {
+		return false, err
+	}
+	fmt.Printf("%+v\n", resa)
+
+	return true, nil
+}
+
 func (db *DB) GetTodos() ([]*model.Todo, error) {
 	collection := colHelper(db, "todos")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -126,9 +182,13 @@ func (db *DB) GetTodos() ([]*model.Todo, error) {
 			log.Fatal(err)
 		}
 
-		singleTodo.Category, err = db.GetCategoryById(res.Current.Lookup("category_id").StringValue())
-		if err != nil {
-			return nil, err
+		if (res.Current.Lookup("category_id").StringValue() == "0") {
+			singleTodo.Category = &model.Category{"0", "Tâche","fa-tasks","#06b6d4"}
+		} else {
+			singleTodo.Category, err = db.GetCategoryById(res.Current.Lookup("category_id").StringValue())
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		if singleTodo.Checked == nil {

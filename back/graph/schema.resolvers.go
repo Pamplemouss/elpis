@@ -30,6 +30,16 @@ func (r *mutationResolver) EditCategory(ctx context.Context, input model.EditCat
 	return r.db.EditCategory(&input)
 }
 
+// DeleteTodo is the resolver for the deleteTodo field.
+func (r *mutationResolver) DeleteTodo(ctx context.Context, input string) (bool, error) {
+	return r.db.DeleteTodo(&input)
+}
+
+// DeleteCategory is the resolver for the deleteCategory field.
+func (r *mutationResolver) DeleteCategory(ctx context.Context, input string) (bool, error) {
+	return r.db.DeleteCategory(&input)
+}
+
 // ToggleCheck is the resolver for the toggleCheck field.
 func (r *mutationResolver) ToggleCheck(ctx context.Context, input model.ToggleCheck) (*model.Todo, error) {
 	return r.db.ToggleCheck(&input)

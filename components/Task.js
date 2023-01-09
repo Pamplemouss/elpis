@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { getBGColor } from '../utilities/Utilities';
-import { sameDay } from '../utilities/Utilities';
 import { motion } from "framer-motion"
 
 export default function Task(props) {

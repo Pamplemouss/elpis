@@ -1,3 +1,6 @@
+# Generate after each modification
+# go run github.com/99designs/gqlgen generate
+
 scalar Time
 
 type Todo {
@@ -27,15 +30,15 @@ input NewTodo {
   categoryId: String!
   startDate: Int!
   repeatable: Boolean!
-  repeat: newRepeat
+  repeat: NewRepeat
 }
 
-input newRepeat {
+input NewRepeat {
   rule: String!
   value: [Int]
 }
 
-input newCategory {
+input NewCategory {
   name: String!
   faCode: String!
   color: String!
@@ -47,7 +50,7 @@ input EditTodo {
   categoryId: String
   startDate: Int
   repeatable: Boolean
-  repeat: editRepeat
+  repeat: EditRepeat
 }
 
 input EditCategory {
@@ -57,12 +60,12 @@ input EditCategory {
   color: String
 }
 
-input editRepeat {
+input EditRepeat {
   rule: String!
   value: [Int]
 }
 
-input toggleCheck {
+input ToggleCheck {
   todoId: ID!
   date: Int
 }
@@ -75,8 +78,10 @@ type Query {
 
 type Mutation {
   createTodo(input: NewTodo!): Todo!
-  createCategory(input: newCategory!): Category!
+  createCategory(input: NewCategory!): Category!
   editTodo(input: EditTodo!): Todo!
   editCategory(input: EditCategory!): Category!
-  toggleCheck(input: toggleCheck!): Todo!
+  deleteTodo(input: ID!): Boolean!
+  deleteCategory(input: ID!): Boolean!
+  toggleCheck(input: ToggleCheck!): Todo!
 }

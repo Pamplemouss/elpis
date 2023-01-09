@@ -16,6 +16,11 @@ type EditCategory struct {
 	Color  *string `json:"color" bson:"color"`
 }
 
+type EditRepeat struct {
+	Rule  string `json:"rule" bson:"rule"`
+	Value []*int `json:"value" bson:"value"`
+}
+
 type EditTodo struct {
 	ID         string      `json:"id" bson:"_id"`
 	Name       *string     `json:"name" bson:"name"`
@@ -23,6 +28,17 @@ type EditTodo struct {
 	StartDate  *int        `json:"start_date" bson:"start_date"`
 	Repeatable *bool       `json:"repeatable" bson:"repeatable"`
 	Repeat     *EditRepeat `json:"repeat" bson:"repeat"`
+}
+
+type NewCategory struct {
+	Name   string `json:"name" bson:"name"`
+	FaCode string `json:"fa_code" bson:"fa_code"`
+	Color  string `json:"color" bson:"color"`
+}
+
+type NewRepeat struct {
+	Rule  string `json:"rule" bson:"rule"`
+	Value []*int `json:"value" bson:"value"`
 }
 
 type NewTodo struct {
@@ -46,22 +62,6 @@ type Todo struct {
 	StartDate  int       `json:"start_date" bson:"start_date"`
 	Repeatable bool      `json:"repeatable" bson:"repeatable"`
 	Repeat     *Repeat   `json:"repeat" bson:"repeat"`
-}
-
-type EditRepeat struct {
-	Rule  string `json:"rule" bson:"rule"`
-	Value []*int `json:"value" bson:"value"`
-}
-
-type NewCategory struct {
-	Name   string `json:"name" bson:"name"`
-	FaCode string `json:"fa_code" bson:"fa_code"`
-	Color  string `json:"color" bson:"color"`
-}
-
-type NewRepeat struct {
-	Rule  string `json:"rule" bson:"rule"`
-	Value []*int `json:"value" bson:"value"`
 }
 
 type ToggleCheck struct {

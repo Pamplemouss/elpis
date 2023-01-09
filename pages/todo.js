@@ -8,7 +8,7 @@ import TaskModal from '../components/TaskModal';
 import CategoriesModal from '../components/CategoriesModal';
 import { sameDay, date1BeforeDate2, initDateToMidnight } from '../utilities/Utilities';
 import { TodosQuery, CategoriesQuery } from '../utilities/Queries';
-import { EditTodoMutation, EditCategoryMutation, ToggleTodoMutation } from '../utilities/Mutations';
+import { EditTodoMutation, EditCategoryMutation, ToggleTodoMutation, CreateTodoMutation, CreateCategoryMutation, DeleteTodoMutation, DeleteCategoryMutation } from '../utilities/Mutations';
 
 
 export default function Todo() {
@@ -16,15 +16,22 @@ export default function Todo() {
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [showCategoriesModal, setShowCategoriesModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
-    const {loading: todosLoading, error: todosError, data: todosData} = useQuery(TodosQuery);
-    const {loading: categoriesLoading, error: categoriesError, data: categoriesData} = useQuery(CategoriesQuery);
-    const [editTodoMutate] = useMutation(EditTodoMutation);
-    const [editCategoryMutate] = useMutation(EditCategoryMutation);
-    const [toggleMutate] = useMutation(ToggleTodoMutation);
     const [idToDelete, setIdToDelete] = useState("");
     const [taskToEdit, setTaskToEdit] = useState();
     const [activeDate, setActiveDate] = useState(initDateToMidnight(new Date()));
     const [toastMessage, setToastMessage] = useState("");
+
+    const {loading: todosLoading, error: todosError, data: todosData} = useQuery(TodosQuery);
+    const {loading: categoriesLoading, error: categoriesError, data: categoriesData} = useQuery(CategoriesQuery);
+
+    const [createTodoMutate] = useMutation(CreateTodoMutation,{refetchQueries: [{ query: TodosQuery }]});
+    const [createCategoryMutate] = useMutation(CreateCategoryMutation,{refetchQueries: [{ query: CategoriesQuery }]});
+    const [editTodoMutate] = useMutation(EditTodoMutation);
+    const [editCategoryMutate] = useMutation(EditCategoryMutation);
+    const [deleteTodoMutate] = useMutation(DeleteTodoMutation,{refetchQueries: [{ query: TodosQuery }]});
+    const [deleteCategoryMutate] = useMutation(DeleteCategoryMutation,{refetchQueries: [{ query: CategoriesQuery }, { query: TodosQuery }]});
+    const [toggleMutate] = useMutation(ToggleTodoMutation);
+
 
     if (todosLoading || categoriesLoading) return <p>Loading</p>
     if (todosError || categoriesError) return <p>Error</p>
@@ -76,7 +83,6 @@ export default function Todo() {
     });
 
     const taskList = taskListUnfinished.concat(taskListFinished).map((task) => {
-        const category = categories.filter(category => { if (category.id === task.category) return category })[0];
         return (
             <Task
                 key={task.id}
@@ -109,8 +115,12 @@ export default function Todo() {
                 value: editedTask.repeat.value == "" ? null : editedTask.repeat.value
             }
         }
-        editTodoMutate({variables: {input: toSend}});
-        displayToast("Task edited !");
+        editTodoMutate({
+            variables: {input: toSend},
+            onCompleted: (data) => {
+                displayToast("Task edited !");
+            }
+        });
     }
 
     function askDelete(id) {
@@ -119,14 +129,32 @@ export default function Todo() {
     }
 
     function deleteTask() {
-        const remainingTasks = tasks.filter((task) => task.id !== idToDelete);
-        setTasks(remainingTasks);
-        displayToast("Task deleted!");
+        deleteTodoMutate({
+            variables: {input: idToDelete},
+            onCompleted: (data) => {
+                if (data.deleteTodo) displayToast("Task deleted!");
+            }
+        });
     }
 
     function addTask(newTask) {
-        setTasks([...tasks, newTask]);
-        displayToast("New task created!");
+        var toSend = {
+            name: newTask.name,
+            categoryId: newTask.category.id,
+            startDate: newTask.startDate,
+            repeatable: newTask.repeatable,
+            repeat: {
+                rule: newTask.repeat.rule,
+                value: newTask.repeat.value == "" ? null : newTask.repeat.value
+            }
+        }
+
+        createTodoMutate({
+            variables: {input: toSend},
+            onCompleted: (data) => {
+                displayToast("New task created!");
+            }
+        });
     }
 
     function displayToast(message) {
@@ -139,23 +167,31 @@ export default function Todo() {
     }
 
     function editCategory(editedCategory) {
-        editCategoryMutate({variables: {input: editedCategory}});
-        displayToast("Category edited !");
+        editCategoryMutate({
+            variables: {input: editedCategory},
+            onCompleted: (data) => {
+                displayToast("Category edited !");
+            }
+        });
     }
 
     function createCategory(newCategory) {
-        setCategories([...categories, newCategory]);
+        delete newCategory.id
+        createCategoryMutate({
+            variables: {input: newCategory},
+            onCompleted: (data) => {
+                displayToast("Category created !");
+            }
+        });
     }
 
     function deleteCategory(id) {
-        const updatedTasks = tasks.map((task) => {
-            if (task.category === id) task.category = 0;
-            return task;
+        deleteCategoryMutate({
+            variables: {input: id},
+            onCompleted: (data) => {
+                if (data.deleteCategory) displayToast("Category deleted!");
+            }
         });
-        setTasks(updatedTasks);
-
-        const remainingCategories = categories.filter((category) => category.id !== id);
-        setCategories(remainingCategories);
     }
 
     return (

@@ -5,17 +5,18 @@ import { AnimatePresence, motion } from "framer-motion"
 
 export default function TaskModal(props) {
     const [newTask, setNewTask] = useState(props.task ? props.task : {
-        id: nanoid(),
+        id: "",
         name: "",
-        category: null,
+        category: "",
         checked: [],
         repeatable: false,
         repeat: { rule: "", value: "" },
-        startDate: new Date()
+        startDate: new Date().getTime()
     });
-    const [repeatWeek, setRepeatWeek] = useState(newTask.repeat.rule === "week" ? newTask.repeat.value : []);
-    const [repeatMonth, setRepeatMonth] = useState(newTask.repeat.rule === "month" ? newTask.repeat.value : []);
-    const [repeatDay, setRepeatDay] = useState(newTask.repeat.rule === "day" ? newTask.repeat.value : 2);
+
+    const [repeatWeek, setRepeatWeek] = useState(newTask.repeat?.rule === "week" ? newTask.repeat.value : []);
+    const [repeatMonth, setRepeatMonth] = useState(newTask.repeat?.rule === "month" ? newTask.repeat.value : []);
+    const [repeatDay, setRepeatDay] = useState(newTask.repeat?.rule === "day" ? newTask.repeat.value : 2);
     const [state, setState] = useState(0);
     const [repeatRuleValid, setRepeatRuleValid] = useState(true);
     const categoriesList = props.categories.map((category) => (
@@ -36,7 +37,7 @@ export default function TaskModal(props) {
     }
 
     useEffect(() => {
-        switch (newTask.repeat.rule) {
+        switch (newTask.repeat?.rule) {
             case "daily":
                 setRepeatRuleValid(true);
                 break;
@@ -81,7 +82,6 @@ export default function TaskModal(props) {
             default:
                 break;
         }
-        console.log(newTask)
         var taskToReturn = { ...newTask, repeat: { ...newTask.repeat, value: value } };
         props.task ? props.editTask(taskToReturn) : props.addTask(taskToReturn);
     }
@@ -161,31 +161,31 @@ export default function TaskModal(props) {
         <>
             <div>
                 <div className="flex items-center mb-2">
-                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat.rule == "daily" || newTask.repeat.rule == ""} id="default-radio-1" type="radio" value="daily" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
+                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat?.rule == "daily" || newTask.repeat?.rule == ""} id="default-radio-1" type="radio" value="daily" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
                     <label htmlFor="default-radio-1" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Daily</label>
                 </div>
                 <div className="flex items-center mb-2">
-                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat.rule == "week"} id="default-radio-2" type="radio" value="week" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
+                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat?.rule == "week"} id="default-radio-2" type="radio" value="week" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
                     <label htmlFor="default-radio-2" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Certain days of the week</label>
                 </div>
                 <AnimatePresence>
-                    {newTask.repeat.rule == "week" ? weekMiniTemplate : null}
+                    {newTask.repeat?.rule == "week" ? weekMiniTemplate : null}
                 </AnimatePresence>
 
                 <div className="flex items-center mb-2">
-                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat.rule == "month"} id="default-radio-3" type="radio" value="month" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
+                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat?.rule == "month"} id="default-radio-3" type="radio" value="month" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
                     <label htmlFor="default-radio-3" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Certain days of the month</label>
                 </div>
                 <AnimatePresence>
-                    {newTask.repeat.rule == "month" ? monthMiniTemplate : null}
+                    {newTask.repeat?.rule == "month" ? monthMiniTemplate : null}
                 </AnimatePresence>
 
                 <div className="flex items-center">
-                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat.rule == "day"} id="default-radio-4" type="radio" value="day" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
+                    <input onChange={handleChangeRule} defaultChecked={newTask.repeat?.rule == "day"} id="default-radio-4" type="radio" value="day" name="repeatRule" className="w-4 h-4 bg-gray-700 border-gray-600 cursor-pointer focus:ring-0 focus:ring-offset-0" />
                     <label htmlFor="default-radio-4" className="ml-2 text-lg font-medium text-gray-300 cursor-pointer">Every X days</label>
                 </div>
                 <AnimatePresence>
-                    {newTask.repeat.rule == "day" ? dayMiniTemplate : null}
+                    {newTask.repeat?.rule == "day" ? dayMiniTemplate : null}
                 </AnimatePresence>
             </div>
 
