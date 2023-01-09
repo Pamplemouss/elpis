@@ -23,10 +23,10 @@ export default function Task(props) {
             layout
             key={props.task.id}
         >
-            <div onClick={() => props.deleteTask(props.task.id)} className="w-10 h-1/2 absolute top-1/2 -translate-y-1/2 left-0 invisible group-hover:visible transition-colors text-slate-500 hover:text-red-500 duration-150 inline-flex justify-center items-center cursor-pointer">
+            <div onClick={() => props.deleteTask(props.task.id)} className="w-10 h-1/2 absolute top-1/2 -translate-y-1/2 right-20 md:left-0 invisible group-hover:visible transition-colors text-slate-500 hover:text-red-500 duration-150 inline-flex justify-center items-center cursor-pointer">
                 <i className="fa-solid fa-trash-alt text-xl"></i>
             </div>
-            <div onClick={() => props.editTask(props.task.id)} className="w-10 h-1/2 absolute top-1/2 -translate-y-1/2 left-10 invisible group-hover:visible transition-colors text-slate-500 hover:text-blue-500 duration-150 inline-flex justify-center items-center cursor-pointer">
+            <div onClick={() => props.editTask(props.task.id)} className="w-10 h-1/2 absolute top-1/2 -translate-y-1/2 right-32 md:left-10 invisible group-hover:visible transition-colors text-slate-500 hover:text-blue-500 duration-150 inline-flex justify-center items-center cursor-pointer">
                 <i className="fa-solid fa-edit text-xl"></i>
             </div>
             <div className="flex w-full p-4 justify-between group-hover:bg-white/10 border-b border-white/30">
