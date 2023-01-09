@@ -15,7 +15,7 @@ export default function Task(props) {
     })
 
     return (
-        <motion.div className="group w-full relative flex px-24 text-gray-300"
+        <motion.div className="group w-full relative flex px-4 md:px-24 text-gray-300"
             initial={{ opacity: 0, x: -100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 100 }}

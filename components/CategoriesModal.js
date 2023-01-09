@@ -71,9 +71,9 @@ export default function CategoriesModal(props) {
     const categoriesList = props.categories.map((category) => {
         if (category.id != 0) {
             return (
-                <div key={category.id} onClick={() => { setCategoryToEdit(category); setState(1); setMode("edit"); }} className="flex border border-white/40 p-2 rounded-xl justify-between items-center cursor-pointer hover:bg-gray-500/20">
-                    <p>{category.name}</p>
-                    <div className="flex-none w-9 h-9 bg-white/10 rounded-lg inline-flex justify-center items-center ml-5">
+                <div key={category.id} onClick={() => { setCategoryToEdit(category); setState(1); setMode("edit"); }} className="flex shadow-md p-2 rounded-xl justify-between items-center cursor-pointer hover:duration-150 outline-blue-500 bg-gray-500/10 hover:bg-gray-500/20">
+                    <p className="text-sm md:text-base">{category.name}</p>
+                    <div className="flex-none w-9 h-9 bg-white/10 rounded-lg inline-flex justify-center items-center md:ml-5">
                         <i className={`fa-solid text-md ${category.faCode}`} style={{ color: category.color }}></i>
                     </div>
                 </div>
@@ -123,7 +123,7 @@ export default function CategoriesModal(props) {
         <div className="grid gap-2 grid-cols-2">
             {categoriesList}
             <div onClick={() => { setState(1); setMode("create"); setCategoryToEdit({ id: nanoid(), name: "", color: "" }) }} className="flex p-2 rounded-xl justify-between items-center cursor-pointer border border-white/40 italic opacity-50 hover:opacity-100">
-                <p>New category</p>
+                <p className="text-sm md:text-base">New category</p>
                 <div className="flex-none w-9 h-9 rounded-lg inline-flex justify-center items-center">
                     <i className="fa-solid fa-plus-square text-md"></i>
                 </div>
@@ -171,7 +171,7 @@ export default function CategoriesModal(props) {
                 transition={{ duration: 0.2 }}
             ></motion.div>
             <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
-                <motion.div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-8 overflow-hidden"
+                <motion.div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-4 md:p-8 overflow-hidden"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}

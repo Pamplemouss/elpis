@@ -20,6 +20,13 @@ body {
   background: #1d2738;
 }
 
+@media (max-width: 640px) {
+    body {
+      position: fixed;
+      width: 100vw;
+    }
+}
+
 
 body {
   @apply bg-slate-900;

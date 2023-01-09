@@ -134,9 +134,9 @@ export default function DatesSlider(props) {
         <>
             <div className="relative">
                 <div className="
-                    w-9/12 relative mx-auto rounded-l-2xl mt-5 mb-5
-                    before:block before:absolute before:pointer-events-none before:bg-gradient-to-r before:from-slate-900 before:w-24 before:h-full before:left-0 before:top-0 before:z-10
-                    after:block after:absolute after:pointer-events-none after:bg-gradient-to-r after:from-slate-900 after:w-24 after:h-full after:right-0 after:top-0 after:z-10 after:scale-x-flip
+                    md:w-9/12 relative mx-auto rounded-l-2xl mt-5 mb-5
+                    before:block before:absolute before:pointer-events-none before:bg-gradient-to-r before:from-slate-900 before:w-8 before:md:w-24 before:h-full before:left-0 before:top-0 before:z-10
+                    after:block after:absolute after:pointer-events-none after:bg-gradient-to-r after:from-slate-900 after:w-8 after:md:w-24 after:h-full after:right-0 after:top-0 after:z-10 after:scale-x-flip
                 ">
                     <div
                         id="datesGrid"
@@ -144,11 +144,11 @@ export default function DatesSlider(props) {
                         onMouseUp={onMouseUp}
                         onMouseDown={onMouseDown}
                         onMouseLeave={onMouseLeave}
-                        className="relative grid grid-rows-1 grid-flow-col overflow-x-hidden select-none gap-3 py-7 px-24 justify-between cursor-pointer"
+                        className="relative grid grid-rows-1 grid-flow-col overflow-x-scroll md:overflow-x-hidden select-none gap-3 py-7 px-24 justify-between cursor-pointer"
                     >
                         {datesList}
                     </div>
-                    <div onClick={() => setShowModal(true)} className="absolute -right-24 top-8 transform w-12 h-12 text-gray-300 hover:text-white bg-gray-700 hover:bg-blue-600 p-7 rounded-lg cursor-pointer shadow-md  duration-150 inline-flex justify-center items-center">
+                    <div onClick={() => setShowModal(true)} className="fixed bottom-6 left-1/4 w-12 h-8 -translate-x-1/2 md:left-auto md:translate-x-0 text-sm md:absolute md:-right-24 md:top-8 transform md:w-12 md:h-12 text-gray-300 hover:text-white bg-gray-700 hover:bg-blue-600 md:p-7 rounded-lg cursor-pointer shadow-md  duration-150 inline-flex justify-center items-center">
                         <i className="fa-solid fa-calendar-alt" style={{ fontSize: "1.5em" }}></i>
                     </div>
                 </div>

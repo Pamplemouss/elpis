@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
 import { useQuery, useMutation } from "@apollo/client";
 import Task from '../components/Task';
@@ -199,14 +199,14 @@ export default function Todo() {
             <Head>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
             </Head>
-
+            
             <div className="flex flex-col w-full h-screen pb-20">
                 {/* DATES */}
                 <DatesSlider activeDate={activeDate} setActiveDate={setActiveDate} tasks={tasks} />
 
                 {/* TASKS LIST */}
                 <div className="flex justify-center overflow-y-scroll h-full">
-                    <div className="w-2/5 relative h-fit
+                    <div className="w-full md:w-2/5 relative h-fit
                         ">
                         <LayoutGroup>
                             <AnimatePresence>
@@ -218,11 +218,11 @@ export default function Todo() {
             </div>
 
 
-            <div onClick={() => setShowCategoriesModal(true)} className="fixed bottom-36 right-10 bg-pink-500 w-12 h-12 inline-flex justify-center items-center rounded-2xl cursor-pointer shadow-md hover:bg-pink-700 duration-150">
+            <div onClick={() => setShowCategoriesModal(true)} className="fixed bottom-6 md:bottom-36 right-1/4 translate-x-1/2 md:translate-x-0 md:right-10 bg-pink-500 w-12 h-8 md:w-12 md:h-12 inline-flex justify-center items-center rounded-lg md:rounded-2xl cursor-pointer shadow-md hover:bg-pink-700 duration-150">
                 <i className="fa-solid fa-tags" style={{ fontSize: "1.2em" }}></i>
             </div>
 
-            <div onClick={() => { setTaskToEdit(); setShowTaskModal(true) }} className="fixed bottom-10 right-10 bg-blue-500 w-20 h-20 inline-flex justify-center items-center rounded-2xl cursor-pointer shadow-md hover:bg-blue-700 duration-150">
+            <div onClick={() => { setTaskToEdit(); setShowTaskModal(true) }} className="fixed bottom-4 md:bottom-10 right-1/2 translate-x-1/2 md:translate-x-0 md:right-10 bg-blue-500 w-20 h-12 md:w-20 md:h-20 inline-flex justify-center items-center rounded-lg md:rounded-2xl cursor-pointer shadow-md hover:bg-blue-700 duration-150">
                 <i className="fa-solid fa-plus" style={{ fontSize: "1.5em" }}></i>
             </div>
 

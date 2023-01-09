@@ -21,8 +21,8 @@ export default function TaskModal(props) {
     const [repeatRuleValid, setRepeatRuleValid] = useState(true);
     const categoriesList = props.categories.map((category) => (
         <div key={category.id} onClick={() => setNewTask({ ...newTask, category: category })} className={`flex shadow-md p-2 rounded-xl justify-between items-center cursor-pointer hover:duration-150 outline-blue-500 ${newTask.category.id === category.id ? "outline outline-1 outline-offset-2 bg-gray-800/30" : "text-gray-500 bg-gray-500/10 hover:bg-gray-500/20"}`}>
-            <p>{category.name}</p>
-            <div className="flex-none w-9 h-9 bg-white/10 rounded-lg inline-flex justify-center items-center ml-5">
+            <p className="text-sm md:text-base">{category.name}</p>
+            <div className="flex-none w-9 h-9 bg-white/10 rounded-lg inline-flex justify-center items-center md:ml-5">
                 <i className={`fa-solid text-md ${category.faCode}`} style={{ color: category.color }}></i>
             </div>
         </div>
@@ -218,7 +218,7 @@ export default function TaskModal(props) {
                 transition={{ duration: 0.2 }}
             ></motion.div>
             <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
-                <motion.div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-10"
+                <motion.div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-4 md:p-8"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
