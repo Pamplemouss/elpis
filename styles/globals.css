@@ -10,39 +10,30 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: #1d2738;
-  }
+
+html {
+  color-scheme: dark;
 }
 
-.icon.Santé {
-  @apply text-emerald-500;
+body {
+  color: white;
+  background: #1d2738;
 }
 
-.category.Santé {
-  @apply bg-emerald-500/30;
-  @apply text-emerald-500;
+@media (max-width: 640px) {
+    body {
+      position: fixed;
+      width: 100vw;
+    }
 }
 
-.icon.Sport {
-  @apply text-blue-500;
+
+body {
+  @apply bg-slate-900;
 }
 
-.category.Sport {
-  @apply bg-blue-500/30;
-  @apply text-blue-500;
-}
 
-.icon.Maison {
-  @apply text-orange-500;
-}
 
-.category.Maison {
-  @apply bg-orange-500/30;
-  @apply text-orange-500;
+.active .slot {
+  @apply visible;
 }

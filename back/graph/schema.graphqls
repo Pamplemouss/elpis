@@ -1,0 +1,87 @@
+# Generate after each modification
+# go run github.com/99designs/gqlgen generate
+
+scalar Time
+
+type Todo {
+  id: ID!
+  name: String!
+  category: Category!
+  checked: [Int]
+  startDate: Int!
+  repeatable: Boolean!
+  repeat: Repeat
+}
+
+type Category {
+  id: ID!
+  name: String!
+  faCode: String!
+  color: String!
+}
+
+type Repeat {
+  rule: String!
+  value: [Int]
+}
+
+input NewTodo {
+  name: String!
+  categoryId: String!
+  startDate: Int!
+  repeatable: Boolean!
+  repeat: NewRepeat
+}
+
+input NewRepeat {
+  rule: String!
+  value: [Int]
+}
+
+input NewCategory {
+  name: String!
+  faCode: String!
+  color: String!
+}
+
+input EditTodo {
+  id: ID!
+  name: String
+  categoryId: String
+  startDate: Int
+  repeatable: Boolean
+  repeat: EditRepeat
+}
+
+input EditCategory {
+  id: ID!
+  name: String
+  faCode: String
+  color: String
+}
+
+input EditRepeat {
+  rule: String!
+  value: [Int]
+}
+
+input ToggleCheck {
+  todoId: ID!
+  date: Int
+}
+
+type Query {
+  todos: [Todo!]!
+  category(_id: String!): Category!
+  categories: [Category!]!
+}
+
+type Mutation {
+  createTodo(input: NewTodo!): Todo!
+  createCategory(input: NewCategory!): Category!
+  editTodo(input: EditTodo!): Todo!
+  editCategory(input: EditCategory!): Category!
+  deleteTodo(input: ID!): Boolean!
+  deleteCategory(input: ID!): Boolean!
+  toggleCheck(input: ToggleCheck!): Todo!
+}
