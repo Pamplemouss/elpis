@@ -19,7 +19,7 @@ export default function TaskModal(props) {
     const [state, setState] = useState(0);
     const [repeatRuleValid, setRepeatRuleValid] = useState(true);
     const categoriesList = props.categories.map((category) => (
-        <div key={category.id} onClick={() => setNewTask({ ...newTask, category: category.id })} className={`flex shadow-md p-2 rounded-xl justify-between items-center cursor-pointer hover:duration-150 outline-blue-500 ${newTask.category === category.id ? "outline outline-1 outline-offset-2 bg-gray-800/30" : "text-gray-500 bg-gray-500/10 hover:bg-gray-500/20"}`}>
+        <div key={category.id} onClick={() => setNewTask({ ...newTask, category: category })} className={`flex shadow-md p-2 rounded-xl justify-between items-center cursor-pointer hover:duration-150 outline-blue-500 ${newTask.category.id === category.id ? "outline outline-1 outline-offset-2 bg-gray-800/30" : "text-gray-500 bg-gray-500/10 hover:bg-gray-500/20"}`}>
             <p>{category.name}</p>
             <div className="flex-none w-9 h-9 bg-white/10 rounded-lg inline-flex justify-center items-center ml-5">
                 <i className={`fa-solid text-md ${category.faCode}`} style={{ color: category.color }}></i>
@@ -81,7 +81,7 @@ export default function TaskModal(props) {
             default:
                 break;
         }
-
+        console.log(newTask)
         var taskToReturn = { ...newTask, repeat: { ...newTask.repeat, value: value } };
         props.task ? props.editTask(taskToReturn) : props.addTask(taskToReturn);
     }
@@ -108,7 +108,7 @@ export default function TaskModal(props) {
             </div>
             <div className="flex space-x-5 mt-10">
                 <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => props.setShowModal(false)}>Cancel</button>
-                <button disabled={newTask.name.length == 0 || newTask.category == undefined ? true : false} className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => newTask.repeatable ? setState(state + 1) : setState(state + 2)}>Next</button>
+                <button disabled={newTask.name.length == 0 || newTask.category.id == undefined ? true : false} className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => newTask.repeatable ? setState(state + 1) : setState(state + 2)}>Next</button>
             </div>
         </>
     );
@@ -199,7 +199,7 @@ export default function TaskModal(props) {
     const calendarTemplate = (
         <>
             <div className="mb-7 text-center text-lg">When do you want to schedule the task?</div>
-            <Calendar activeDate={newTask.startDate} setActiveDate={(date) => setNewTask({ ...newTask, startDate: date })} />
+            <Calendar activeDate={new Date(newTask.startDate)} setActiveDate={(date) => setNewTask({ ...newTask, startDate: date })} />
             <div className="flex space-x-5 mt-10">
                 <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => newTask.repeatable ? setState(state - 1) : setState(state - 2)}>Previous</button>
                 <button className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => { returnTask(); props.setShowModal(false); }}>{props.task ? "Edit" : "Create"}</button>

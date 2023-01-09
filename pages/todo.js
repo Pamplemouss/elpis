@@ -1,98 +1,42 @@
 import Head from 'next/head'
 import React, { useState } from "react";
-import { nanoid } from "nanoid";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
-import { gql } from "@apollo/client";
-import client from "../apollo-client";
+import { useQuery, useMutation } from "@apollo/client";
 import Task from '../components/Task';
 import DatesSlider from '../components/DatesSlider';
 import TaskModal from '../components/TaskModal';
 import CategoriesModal from '../components/CategoriesModal';
-import { sameDay, date1BeforeDate2 } from '../utilities/Utilities';
+import { sameDay, date1BeforeDate2, initDateToMidnight } from '../utilities/Utilities';
+import { TodosQuery, CategoriesQuery } from '../utilities/Queries';
+import { EditTodoMutation, ToggleTodoMutation } from '../utilities/Mutations';
 
-export async function getStaticProps() {
-    const { data } = await client.query({
-      query: gql`
-        query {
-            todos {
-		        id
-		        name
-		        startDate
-                checked
-                category {
-			        id
-			        name
-			        faCode
-			        color
-		        }
-		        repeatable
-		        repeat {
-		        	rule
-		        	value
-		        }
-            }
-            categories {
-		        id
-		        name
-		        faCode
-		        color
-            }
-        }
-      `,
-    });
 
-    return {
-      props: {
-        data: {
-            todos: data.todos,
-            categories: data.categories,
-        } 
-      },
-   };
-}
-
-/*const TASKS = [
-    { id: nanoid(), name: "Méditation", category: 2, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "daily" } },
-    { id: nanoid(), name: "Aspirateur", category: 1, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "week", value: [0, 3] } },
-    { id: nanoid(), name: "Poussières", category: 1, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "month", value: [1, 15] } },
-    { id: nanoid(), name: "Vaisselle", category: 6, checked: [], startDate: new Date(), repeatable: true, repeat: { rule: "daily" } },
-    { id: nanoid(), name: "Jogging", category: 3, checked: [], startDate: new Date(2022, 8, 13), repeatable: true, repeat: { rule: "week", value: [0, 2, 4] } },
-    { id: nanoid(), name: "Magie", category: 5, checked: [], startDate: new Date(2022, 8, 11), repeatable: true, repeat: { rule: "day", value: [3] } },
-    { id: nanoid(), name: "Nettoyer douche", category: 0, checked: [new Date(2022, 8, 16)], startDate: new Date(2022, 8, 15), repeatable: false, repeat: { rule: "", value: "" } },
-    { id: nanoid(), name: "Piano 777", category: 5, checked: [], startDate: new Date(2022, 8, 16), repeatable: false, repeat: { rule: "", value: "" } },
-];
-
-const CATEGORIES = [
-    { id: 0, name: "Tâche", faCode: "fa-tasks", color: "#06b6d4" },
-    { id: 1, name: "Maison", faCode: "fa-home", color: "#f97316" },
-    { id: 2, name: "Santé", faCode: "fa-kit-medical", color: "#10b981" },
-    { id: 3, name: "Sport", faCode: "fa-running", color: "#3b82f6" },
-    { id: 4, name: "Divertissement", faCode: "fa-film", color: "#0ea5e9" },
-    { id: 5, name: "Etudes", faCode: "fa-graduation-cap", color: "#8b5cf6" },
-    { id: 6, name: "Alimentation", faCode: "fa-utensils", color: "#ef4444" },
-];*/
-
-export default function Todo({ data }) {
+export default function Todo() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [showCategoriesModal, setShowCategoriesModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
-    const [tasks, setTasks] = useState(data.todos);
-    const [categories, setCategories] = useState(data.categories);
+    const {loading: todosLoading, error: todosError, data: todosData} = useQuery(TodosQuery);
+    const {loading: categoriesLoading, error: categoriesError, data: categoriesData} = useQuery(CategoriesQuery);
+    const [editMutate] = useMutation(EditTodoMutation);
+    const [toggleMutate] = useMutation(ToggleTodoMutation);
     const [idToDelete, setIdToDelete] = useState("");
     const [taskToEdit, setTaskToEdit] = useState();
-    const [activeDate, setActiveDate] = useState(new Date());
+    const [activeDate, setActiveDate] = useState(initDateToMidnight(new Date()));
     const [toastMessage, setToastMessage] = useState("");
 
-    console.log(data)
+    if (todosLoading || categoriesLoading) return <p>Loading</p>
+    if (todosError || categoriesError) return <p>Error</p>
 
+    var tasks = todosData.todos;
+    var categories = categoriesData.categories;
 
     // FILTER TASK FROM ACTIVE DATE
     const taskListUnsorted = tasks.filter((task) => {
-        if (!date1BeforeDate2(task.startDate, activeDate)) return;      // Filter if active date is before starting date
+        if (!date1BeforeDate2(new Date(task.startDate), activeDate)) return;      // Filter if active date is before starting date
 
         if (!task.repeatable && task.checked.length > 0) {
-            if (!sameDay(task.checked[0], activeDate)) return;          // Filter if non repeatable task was checked another day
+            if (!sameDay(new Date(task.checked[0]), activeDate)) return;          // Filter if non repeatable task was checked another day
         }
 
         if (task.repeatable) {
@@ -107,7 +51,7 @@ export default function Todo({ data }) {
                     if (!task.repeat.value.includes(activeDate.getDate())) return;
                     break;
                 case "day":
-                    var testDate = new Date(task.startDate);
+                    var testDate = new Date(new Date(task.startDate));
                     var isMultiple = false;
                     do {
                         if (sameDay(testDate, activeDate)) isMultiple = true;
@@ -124,10 +68,10 @@ export default function Todo({ data }) {
 
     // SORT TASKS
     const taskListFinished = taskListUnsorted.filter((task) => {
-        if (task.checked.find((date) => sameDay(date, activeDate))) return task;
+        if (task.checked.find((date) => sameDay(new Date(date), activeDate))) return task;
     });
     const taskListUnfinished = taskListUnsorted.filter((task) => {
-        if (!task.checked.find((date) => sameDay(date, activeDate))) return task;
+        if (!task.checked.find((date) => sameDay(new Date(date), activeDate))) return task;
     });
 
     const taskList = taskListUnfinished.concat(taskListFinished).map((task) => {
@@ -136,7 +80,7 @@ export default function Todo({ data }) {
             <Task
                 key={task.id}
                 task={task}
-                activeDate={activeDate}
+                checked = {task.checked.find((date) => sameDay(new Date(date), activeDate)) == undefined ? false : true}
                 category={task.category}
                 toggleTask={toggleTask}
                 deleteTask={askDelete}
@@ -146,22 +90,25 @@ export default function Todo({ data }) {
     });
 
     function toggleTask(id) {
-        const updatedTasks = tasks.map((task) => {
-            if (task.id !== id) return task;
-
-            if (task.checked.find(date => sameDay(date, activeDate))) task.checked = task.checked.filter((date) => { !sameDay(date, activeDate) });
-            else task.checked.push(activeDate);
-            return task;
-        });
-        setTasks(updatedTasks);
+        toggleMutate({variables: {input: {
+            todoId: id,
+            date: activeDate.getTime()
+        }}})
     }
 
     function editTask(editedTask) {
-        const updatedTasks = tasks.map((task) => {
-            if (task.id === editedTask.id) return editedTask;
-            else return task;
-        });
-        setTasks(updatedTasks);
+        var toSend = {
+            id: editedTask.id,
+            name: editedTask.name,
+            categoryId: editedTask.category.id,
+            startDate: editedTask.startDate,
+            repeatable: editedTask.repeatable,
+            repeat: {
+                rule: editedTask.repeat.rule,
+                value: editedTask.repeat.value == "" ? null : editedTask.repeat.value
+            }
+        }
+        editMutate({variables: {input: toSend}});
         displayToast("Task edited !");
     }
 

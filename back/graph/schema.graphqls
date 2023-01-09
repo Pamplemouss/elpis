@@ -4,8 +4,8 @@ type Todo {
   id: ID!
   name: String!
   category: Category!
-  checked: [Time]
-  startDate: Time!
+  checked: [Int]
+  startDate: Int!
   repeatable: Boolean!
   repeat: Repeat
 }
@@ -25,7 +25,7 @@ type Repeat {
 input NewTodo {
   name: String!
   categoryId: String!
-  startDate: Time!
+  startDate: Int!
   repeatable: Boolean!
   repeat: newRepeat
 }
@@ -41,34 +41,13 @@ input newCategory {
   color: String!
 }
 
-input editTodo {
+input EditTodo {
   id: ID!
   name: String
   categoryId: String
-  startDate: Time
+  startDate: Int
   repeatable: Boolean
   repeat: editRepeat
-}
-
-input editTodoName {
-  id: ID!
-  name: String!
-}
-
-input editTodoRepeat {
-  id: ID!
-  repeatable: Boolean
-  repeat: editRepeat
-}
-
-input editTodoStartDate {
-  id: ID!
-  startDate: Time
-}
-
-input editTodoCategory {
-  id: ID!
-  categoryId: String
 }
 
 input editRepeat {
@@ -77,8 +56,8 @@ input editRepeat {
 }
 
 input toggleCheck {
-  id: ID!
-  date: Time
+  todoId: ID!
+  date: Int
 }
 
 type Query {
@@ -90,9 +69,6 @@ type Query {
 type Mutation {
   createTodo(input: NewTodo!): Todo!
   createCategory(input: newCategory!): Category!
-  editTodoName(input: editTodoName!): Todo!
-  editTodoCategory(input: editTodoCategory!): Todo!
-  editTodoStartDate(input: editTodoStartDate!): Todo!
-  editTodoRepeat(input: editTodoRepeat!): Todo!
+  editTodo(input: EditTodo!): Todo!
   toggleCheck(input: toggleCheck!): Todo!
 }

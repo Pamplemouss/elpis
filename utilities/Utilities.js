@@ -15,18 +15,18 @@ export function getBGColor(color) {
 }
 
 export function date1BeforeDate2(date1, date2) {
-    var date1Formated = new Date(date1);
-    date1Formated.setHours(0);
-    date1Formated.setMinutes(0);
-    date1Formated.setSeconds(0);
-    date1Formated.setMilliseconds(0);
-
-    var date2Formated = new Date(date2);
-    date2Formated.setHours(0);
-    date2Formated.setMinutes(0);
-    date2Formated.setSeconds(0);
-    date2Formated.setMilliseconds(0);
+    var date1Formated = initDateToMidnight(new Date(date1));
+    var date2Formated = initDateToMidnight(new Date(date2));
 
     if (date1Formated.getTime() <= date2Formated.getTime()) return true;
     else return false;
+}
+
+export function initDateToMidnight(date) {
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+
+    return date;
 }

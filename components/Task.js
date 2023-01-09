@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getBGColor } from '../utilities/Utilities';
 import { sameDay } from '../utilities/Utilities';
 import { motion } from "framer-motion"
 
 export default function Task(props) {
+    const [toggleState, setToggleState] = useState(props.checked)
     const repeatableIcon = (
         <div className="w-6 h-6 inline ml-2 rounded-md bg-white/20 inline-flex justify-center items-center">
             <i className="fa-solid fa-sync text-xs text-slate-400"></i>
         </div>
     );
+
+    useEffect(() => {
+        setToggleState(props.checked)
+    })
+
     return (
         <motion.div className="group w-full relative flex px-24 text-gray-300"
             initial={{ opacity: 0, x: -100 }}
@@ -40,8 +46,8 @@ export default function Task(props) {
 
                 <div className="inline-flex items-center ml-4">
                     <input
-                        checked={props.task.checked.find((date) => sameDay(date, props.activeDate))}
-                        onClick={() => props.toggleTask(props.task.id)}
+                        checked={toggleState}
+                        onChange={() => props.toggleTask(props.task.id)}
                         type="checkbox"
                         className="w-7 h-7 cursor-pointer text-emerald-500 rounded-full bg-white/10 border-0 duration-75 focus:ring-1 focus:ring-emerald-500 focus:ring-offset-[#1d2738] focus:ring-offset-3">
                     </input>

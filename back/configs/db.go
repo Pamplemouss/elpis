@@ -132,7 +132,7 @@ func (db *DB) GetTodos() ([]*model.Todo, error) {
 		}
 
 		if singleTodo.Checked == nil {
-			singleTodo.Checked = make([]*time.Time, 0)
+			singleTodo.Checked = make([]*int, 0)
 		}
 
 		todos = append(todos, singleTodo)
@@ -141,7 +141,7 @@ func (db *DB) GetTodos() ([]*model.Todo, error) {
 	return todos, err
 }
 
-func (db *DB) EditTodoName(input *model.EditTodoName) (*model.Todo, error) {
+func (db *DB) EditTodo(input *model.EditTodo) (*model.Todo, error) {
 	collection := colHelper(db, "todos")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -152,7 +152,13 @@ func (db *DB) EditTodoName(input *model.EditTodoName) (*model.Todo, error) {
 	}
 
 	filter := bson.D{{"_id", id}}
-	update := bson.M{"$set": bson.M{"name": input.Name}}
+	update := bson.M{"$set": bson.M{
+		"name":        input.Name,
+		"start_date":  input.StartDate,
+		"repeatable":  input.Repeatable,
+		"category_id": input.CategoryID,
+		"repeat": input.Repeat,
+	}}
 
 	res, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -164,107 +170,7 @@ func (db *DB) EditTodoName(input *model.EditTodoName) (*model.Todo, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return todo, err
-}
-
-func (db *DB) EditTodoCategory(input *model.EditTodoCategory) (*model.Todo, error) {
-	collection := colHelper(db, "todos")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	id, err := primitive.ObjectIDFromHex(input.ID)
-	if err != nil {
-		return nil, err
-	}
-	_, err = db.GetCategoryById(*input.CategoryID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{"_id", id}}
-	update := bson.M{"$set": bson.M{"category_id": input.CategoryID}}
-
-	res, err := collection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(res.ModifiedCount)
-
-	todo, err := db.getTodoById(input.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return todo, err
-}
-
-func (db *DB) EditTodoStartDate(input *model.EditTodoStartDate) (*model.Todo, error) {
-	collection := colHelper(db, "todos")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	id, err := primitive.ObjectIDFromHex(input.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{"_id", id}}
-	update := bson.M{"$set": bson.M{"start_date": input.StartDate}}
-
-	res, err := collection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(res.ModifiedCount)
-
-	todo, err := db.getTodoById(input.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return todo, err
-}
-
-func (db *DB) EditTodoRepeat(input *model.EditTodoRepeat) (*model.Todo, error) {
-	if !*input.Repeatable && input.Repeat != nil {
-		return nil, nil
-	}
-	collection := colHelper(db, "todos")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	id, err := primitive.ObjectIDFromHex(input.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{{"_id", id}}
-	set := bson.M{}
-	unset := bson.M{}
-	if input.Repeat == nil {
-		if input.Repeatable != nil {
-			set = bson.M{"repeatable": input.Repeatable}
-		}
-		unset = bson.M{"repeat": ""}
-	} else {
-		if input.Repeatable != nil {
-			set = bson.M{"repeatable": input.Repeatable, "repeat": input.Repeat}
-		} else {
-			set = bson.M{"repeat": input.Repeat}
-		}
-	}
-
-	res, err := collection.UpdateOne(ctx, filter, bson.M{"$set": set, "$unset": unset})
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(res.ModifiedCount)
-
-	todo, err := db.getTodoById(input.ID)
-	if err != nil {
-		return nil, err
-	}
+	todo.Category, err = db.GetCategoryById(*input.CategoryID)
 
 	return todo, err
 }
@@ -319,20 +225,21 @@ func (db *DB) ToggleCheck(input *model.ToggleCheck) (*model.Todo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	id, err := primitive.ObjectIDFromHex(input.ID)
+	id, err := primitive.ObjectIDFromHex(input.TodoID)
 	if err != nil {
 		return nil, err
 	}
 
-	todoScan, err := db.getTodoById(input.ID)
+	todoScan, err := db.getTodoById(input.TodoID)
 	if err != nil {
 		return nil, err
 	}
-	update :=  bson.M{}
-	if (!timeInSlice(input.Date, todoScan.Checked)) {
+	update := bson.M{}
+
+
+	if !timeInSlice(input.Date, todoScan.Checked) {
 		update = bson.M{"$push": bson.M{"checked": input.Date}}
 	} else {
-		fmt.Printf("aaaaaaa")
 		update = bson.M{"$pull": bson.M{"checked": input.Date}}
 	}
 
@@ -344,7 +251,7 @@ func (db *DB) ToggleCheck(input *model.ToggleCheck) (*model.Todo, error) {
 	}
 	fmt.Println(res.ModifiedCount)
 
-	todo, err := db.getTodoById(input.ID)
+	todo, err := db.getTodoById(input.TodoID)
 	if err != nil {
 		return nil, err
 	}
@@ -352,11 +259,11 @@ func (db *DB) ToggleCheck(input *model.ToggleCheck) (*model.Todo, error) {
 	return todo, err
 }
 
-func timeInSlice(a *time.Time, list []*time.Time) bool {
-    for _, b := range list {
-        if b.GoString() == a.GoString() {
-            return true
-        }
-    }
-    return false
+func timeInSlice(a *int, list []*int) bool {
+	for _, b := range list {
+		if (*b == *a) {
+			return true
+		}
+	}
+	return false
 }
