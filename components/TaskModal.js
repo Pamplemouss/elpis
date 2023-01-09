@@ -199,7 +199,7 @@ export default function TaskModal(props) {
     const calendarTemplate = (
         <>
             <div className="mb-7 text-center text-lg">When do you want to schedule the task?</div>
-            <Calendar activeDate={new Date(newTask.startDate)} setActiveDate={(date) => setNewTask({ ...newTask, startDate: date })} />
+            <Calendar activeDate={new Date(newTask.startDate)} setActiveDate={(date) => setNewTask({ ...newTask, startDate: date.getTime() })} />
             <div className="flex space-x-5 mt-10">
                 <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => newTask.repeatable ? setState(state - 1) : setState(state - 2)}>Previous</button>
                 <button className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => { returnTask(); props.setShowModal(false); }}>{props.task ? "Edit" : "Create"}</button>
