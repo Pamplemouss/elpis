@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
 import Task from '../components/Task';
@@ -41,7 +41,6 @@ export default function Todo() {
     const [tasks, setTasks] = useState(TASKS);
     const [categories, setCategories] = useState(CATEGORIES);
 
-    console.log(tasks)
     // FILTER TASK FROM ACTIVE DATE
     const taskListUnsorted = tasks.filter((task) => {
         if (!date1BeforeDate2(new Date(task.startDate), activeDate)) return;      // Filter if active date is before starting date
@@ -112,6 +111,7 @@ export default function Todo() {
     }
 
     function editTask(editedTask) {
+        editedTask.category = editedTask.category.id;
         const updatedTasks = tasks.map((task) => {
             if (task.id === editedTask.id) return editedTask;
             else return task;
@@ -132,6 +132,7 @@ export default function Todo() {
     }
 
     function addTask(newTask) {
+        newTask.category = newTask.category.id;
         setTasks([...tasks, newTask]);
         displayToast("New task created!");
     }
@@ -168,10 +169,41 @@ export default function Todo() {
         setCategories(remainingCategories);
     }
 
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        document.addEventListener("mouseup", function(event){
+            var container = document.getElementsByClassName('modal');
+    
+            if (container.length === 0) return;
+            if (container[0].contains(event.target)) return;
+    
+            setShowDeleteModal(false);
+            setShowTaskModal(false);
+            setShowCategoriesModal(false);
+        });
+
+        document.addEventListener("keydown", function(event){
+            if (event.key == "Escape") {
+                setShowDeleteModal(false);
+                setShowTaskModal(false);
+                setShowCategoriesModal(false);
+            }
+        });
+
+        setTimeout(() => {
+            setLoading(false);
+        }, 1500)
+    });
+    
+
+
     return (
         <div>
             <Head>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+                <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet" />
             </Head>
             
             <div className="flex flex-col w-full h-screen pb-20">
@@ -179,16 +211,46 @@ export default function Todo() {
                 <DatesSlider activeDate={activeDate} setActiveDate={setActiveDate} tasks={tasks} />
 
                 {/* TASKS LIST */}
-                <div className="flex justify-center overflow-y-scroll h-full">
-                    <div className="w-full md:w-2/5 relative h-fit
-                        ">
-                        <LayoutGroup>
-                            <AnimatePresence>
-                                {taskList}
-                            </AnimatePresence>
-                        </LayoutGroup>
-                    </div>
-                </div>
+                <AnimatePresence>
+                    { (loading) ? (    
+                        <motion.div
+                            key="loading"
+                            transition={{duration: 0.7}}
+                            exit={{opacity: 0, y: 400}}
+                            className="flex top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center gap-8"
+                        >
+                            <motion.div
+                                animate={{y: [0, -100, 0], backgroundColor: ["rgb(20 184 166)", "rgb(232 121 249)", "rgb(20 184 166)"]}}
+                                transition={{repeat: Infinity, repeatDelay: 0.2, duration: 0.8 }}
+                                className="w-10 h-10 bg-teal-500 rounded-full">
+                            </motion.div>
+                            <motion.div
+                                animate={{y: [0, -100, 0], backgroundColor: ["rgb(20 184 166)", "rgb(232 121 249)", "rgb(20 184 166)"]}}
+                                transition={{delay: 0.1, repeat: Infinity, repeatDelay: 0.2, duration: 0.8 }}
+                                className="w-10 h-10 bg-teal-500 rounded-full">
+                            </motion.div>
+                            <motion.div
+                                animate={{y: [0, -100, 0], backgroundColor: ["rgb(20 184 166)", "rgb(232 121 249)", "rgb(20 184 166)"]}}
+                                transition={{delay: 0.1*2, repeat: Infinity, repeatDelay: 0.2, duration: 0.8 }}
+                                className="w-10 h-10 bg-teal-500 rounded-full">
+                            </motion.div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            className="flex justify-center overflow-y-scroll h-full"
+                            transition={{duration: 1}}
+                            initial={{opacity: 0, y: -300}}
+                            animate={{opacity: 1, y:0}}>
+                            <div className="w-full lg:w-3/5 xl:w-2/5 relative h-fit grid gap-2">
+                                <LayoutGroup>
+                                    <AnimatePresence>
+                                        {taskList}
+                                    </AnimatePresence>
+                                </LayoutGroup>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
 
@@ -202,7 +264,7 @@ export default function Todo() {
 
             <AnimatePresence>
                 {showTaskModal ? (
-                    <TaskModal addTask={addTask} editTask={editTask} setShowModal={setShowTaskModal} categories={categories} task={taskToEdit} />
+                    <TaskModal addTask={addTask} editTask={editTask} setShowModal={setShowTaskModal} categories={categories} task={taskToEdit == undefined ? undefined : {...taskToEdit, category: categories.filter(category => { if (category.id === taskToEdit?.category) return category })[0]}} />
                 ) : null}
             </AnimatePresence>
 
@@ -216,7 +278,7 @@ export default function Todo() {
                             transition={{ duration: 0.2 }}
                         ></motion.div>
                         <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
-                            <motion.div className="items-center bg-gray-700 text-gray-300 rounded-lg p-8"
+                            <motion.div className="modal items-center bg-gray-700 text-gray-300 rounded-lg p-8"
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0 }}

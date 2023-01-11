@@ -21,7 +21,7 @@ export default function DatesSlider(props) {
                 key={date.getTime()}
                 id={date.getTime()}
                 onClick={changeDate}
-                className={`date group text-white/80 shadow-md relative duration-150 text-center w-12 h-16 rounded-2xl flex flex-col justify-between cursor-pointer
+                className={`date group text-white/80 shadow-md relative duration-150 text-center w-12 h-16 custom-shadow rounded-2xl flex flex-col justify-between cursor-pointer
                     ${sameDay(date, props.activeDate) ? "active bg-blue-500 -translate-y-1" : "hover:bg-gray-600 bg-gray-700"}
                     ${sameDay(date, todayDate) ? (sameDay(props.activeDate, date) ? "today outline outline-2 outline-offset-2 outline-blue-300" : "today outline outline-2 outline-white/50") : null}`}
             >
@@ -32,7 +32,7 @@ export default function DatesSlider(props) {
                     </div>
                 }
                 <div className="grow inline-flex justify-center items-center capitalize" style={{ fontSize: "0.7em" }}>{weekday}</div>
-                <div className={`dateNumber duration-150 rounded-b-2xl rounded-t-xl h-10 leading-8 font-bold ${sameDay(props.activeDate, date) ? "active bg-blue-600 text-white" : "group-hover:bg-gray-500 bg-gray-600"}`}>{date.getDate()}</div>
+                <div className={`dateNumber duration-150 rounded-b-2xl rounded-t-xl h-10 leading-10 font-bold ${sameDay(props.activeDate, date) ? "active bg-blue-600 text-white" : "group-hover:bg-gray-500 bg-gray-600"}`}>{date.getDate()}</div>
                 <span className="slot invisible w-4 h-1 absolute bottom-0 bg-white/70 left-1/2 -translate-x-1/2 rounded-t"></span>
 
                 {/* Dot meaning a task is starting there */}
@@ -101,6 +101,20 @@ export default function DatesSlider(props) {
         if (Math.abs(scrollLeft - grid.scrollLeft) > 20) scrolled = true;
     }
 
+    useEffect(() => {
+        document.addEventListener("keydown", function(event){
+            if (event.key == "Escape") setShowModal(false);
+        });
+    
+        document.addEventListener("mouseup", function(event){
+            var container = document.getElementsByClassName('modal');
+    
+            if (container.length === 0) return;
+            if (container[0].contains(event.target)) return;
+    
+            setShowModal(false);
+        });
+    });
 
 
     /*function checkLoadDates() {
@@ -148,7 +162,7 @@ export default function DatesSlider(props) {
                     >
                         {datesList}
                     </div>
-                    <div onClick={() => setShowModal(true)} className="fixed bottom-6 left-1/4 w-12 h-8 -translate-x-1/2 md:left-auto md:translate-x-0 text-sm md:absolute md:-right-24 md:top-8 transform md:w-12 md:h-12 text-gray-300 hover:text-white bg-gray-700 hover:bg-blue-600 md:p-7 rounded-lg cursor-pointer shadow-md  duration-150 inline-flex justify-center items-center">
+                    <div onClick={() => setShowModal(true)} className="fixed bottom-6 left-1/4 w-12 h-8 -translate-x-1/2 md:left-auto md:translate-x-0 text-sm md:absolute md:-right-24 md:top-8 md:w-12 md:h-12 text-gray-300 hover:text-white bg-gray-700 hover:bg-blue-600 md:p-7 duration-150 rounded-lg cursor-pointer shadow-md inline-flex justify-center items-center">
                         <i className="fa-solid fa-calendar-alt" style={{ fontSize: "1.5em" }}></i>
                     </div>
                 </div>
@@ -164,7 +178,7 @@ export default function DatesSlider(props) {
                             transition={{ duration: 0.2 }}
                         ></motion.div>
                         <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
-                            <motion.div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-10"
+                            <motion.div className="modal relative items-center bg-gray-700 text-gray-300 rounded-lg p-10"
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0 }}

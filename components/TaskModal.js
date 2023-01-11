@@ -218,7 +218,7 @@ export default function TaskModal(props) {
                 transition={{ duration: 0.2 }}
             ></motion.div>
             <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
-                <motion.div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-4 md:p-8"
+                <motion.div className="modal relative items-center bg-gray-700 text-gray-300 rounded-lg p-4 md:p-8"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}

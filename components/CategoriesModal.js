@@ -67,6 +67,7 @@ const COLORS = [
 export default function CategoriesModal(props) {
     const [state, setState] = useState(0);
     const [mode, setMode] = useState("");
+    const [deleteState, setDeleteState] = useState(0);
     const [categoryToEdit, setCategoryToEdit] = useState({ id: null, name: "", color: "", faCode: "" });
     const categoriesList = props.categories.map((category) => {
         if (category.id != 0) {
@@ -119,6 +120,19 @@ export default function CategoriesModal(props) {
         props.deleteCategory(categoryToEdit.id);
     }
 
+
+    function deleteClick() {
+        if (deleteState + 1 == 2) {
+            setDeleteState(0);
+            deleteCategory();
+            setState(0);
+            return;
+        }
+        setDeleteState(deleteState + 1);
+    }
+    
+
+
     const categoriesTemplate = (
         <div className="grid gap-2 grid-cols-2">
             {categoriesList}
@@ -133,7 +147,7 @@ export default function CategoriesModal(props) {
 
     const editTemplate = (
         <>
-            <div className="flex gap-3">
+            <div className="flex gap-3 modal">
                 <div className="w-12 rounded-lg inline-flex justify-center items-center bg-white/10">
                     <i className={`fa-solid text-md ${categoryToEdit.faCode}`} style={{ fontSize: "1.5em", color: categoryToEdit.color }}></i>
                 </div>
@@ -150,11 +164,11 @@ export default function CategoriesModal(props) {
             </div>
             <div className="flex space-x-5 mt-5">
                 {mode === "edit" ? (
-                    <button className="bg-red-500 text-white hover:bg-red-600 rounded-lg text-center px-3 py-2" onClick={() => { deleteCategory(); setState(0); }}>
+                    <button className={`rounded-lg text-center px-3 py-2 ${deleteState == 1 ? "bg-red-500 text-white hover:bg-red-600" : "bg-gray-500/30 hover:bg-gray-500/60"}`} onClick={() => { deleteClick() }}>
                         <i className="fa-solid fa-trash-alt text-xl"></i>
                     </button>
                 ) : null}
-                <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => setState(state - 1)}>Cancel</button>
+                <button className="w-full border border-gray-400 hover:bg-gray-600 rounded-lg text-center px-3 py-2" onClick={() => {setState(state - 1); setDeleteState(0)}}>Cancel</button>
                 <button disabled={categoryToEdit.name.length == 0 || categoryToEdit.color == "" || categoryToEdit.faCode == "" ? true : false} className="w-full bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-center px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-500" onClick={() => { setState(state - 1); mode === "edit" ? editCategory() : createCategory() }}>{mode === "edit" ? "Confirm" : "Create"}</button>
             </div>
         </>
@@ -171,7 +185,7 @@ export default function CategoriesModal(props) {
                 transition={{ duration: 0.2 }}
             ></motion.div>
             <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
-                <motion.div className="relative items-center bg-gray-700 text-gray-300 rounded-lg p-4 md:p-8 overflow-hidden"
+                <motion.div className="modal relative items-center bg-gray-700 text-gray-300 rounded-lg p-4 md:p-8 overflow-hidden"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}

@@ -17,7 +17,7 @@ html {
 
 body {
   color: white;
-  background: #1d2738;
+  background: rgb(29, 39, 56);
 }
 
 @media (max-width: 640px) {
@@ -28,11 +28,21 @@ body {
 }
 
 
-body {
-  @apply bg-slate-900;
+
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 
+
+body {
+  @apply bg-slate-900;
+  font-family: 'Comfortaa', cursive;
+}
+
+.custom-shadow {
+  box-shadow: 0 10px 15px -2px rgb(0, 0, 0, 0.2), 0 4px 6px -2px rgb(0, 0, 0, 0.2);
+}
 
 .active .slot {
   @apply visible;

@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
 import { useQuery, useMutation } from "@apollo/client";
 import Task from '../components/Task';
@@ -32,12 +32,10 @@ export default function Todo() {
     const [deleteCategoryMutate] = useMutation(DeleteCategoryMutation,{refetchQueries: [{ query: CategoriesQuery }, { query: TodosQuery }]});
     const [toggleMutate] = useMutation(ToggleTodoMutation);
 
-
-    if (todosLoading || categoriesLoading) return <p>Loading</p>
     if (todosError || categoriesError) return <p>Error</p>
 
-    var tasks = todosData.todos;
-    var categories = categoriesData.categories;
+    var tasks = (todosData !== undefined ? todosData.todos : []);
+    var categories = categoriesData !== undefined ? categoriesData.categories : [];
 
     // FILTER TASK FROM ACTIVE DATE
     const taskListUnsorted = tasks.filter((task) => {
@@ -194,29 +192,84 @@ export default function Todo() {
         });
     }
 
+    useEffect(() => {
+        document.addEventListener("keydown", function(event){
+            if (event.key == "Escape") {
+                setShowDeleteModal(false);
+                setShowTaskModal(false);
+                setShowCategoriesModal(false);
+            }
+        });
+    
+        document.addEventListener("mouseup", function(event){
+            var container = document.getElementsByClassName('modal');
+    
+            if (container.length === 0) return;
+            if (container[0].contains(event.target)) return;
+    
+            setShowDeleteModal(false);
+            setShowTaskModal(false);
+            setShowCategoriesModal(false);
+        });
+    })
+
     return (
         <div>
             <Head>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+                <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet" />
             </Head>
             
-            <div className="flex flex-col w-full h-screen pb-20">
+            <div className="flex flex-col w-full h-screen pb-36 md:pb-20">
                 {/* DATES */}
                 <DatesSlider activeDate={activeDate} setActiveDate={setActiveDate} tasks={tasks} />
 
                 {/* TASKS LIST */}
-                <div className="flex justify-center overflow-y-scroll h-full">
-                    <div className="w-full md:w-2/5 relative h-fit
-                        ">
-                        <LayoutGroup>
-                            <AnimatePresence>
-                                {taskList}
-                            </AnimatePresence>
-                        </LayoutGroup>
-                    </div>
-                </div>
+                <AnimatePresence>
+                    { (todosLoading || categoriesLoading) ? (    
+                        <motion.div
+                            key="loading"
+                            transition={{duration: 0.7}}
+                            exit={{opacity: 0, y: 400}}
+                            className="flex top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center gap-8"
+                        >
+                            <motion.div
+                                animate={{y: [0, -100, 0], backgroundColor: ["rgb(20 184 166)", "rgb(232 121 249)", "rgb(20 184 166)"]}}
+                                transition={{repeat: Infinity, repeatDelay: 0.2, duration: 0.8 }}
+                                className="w-10 h-10 bg-teal-500 rounded-full">
+                            </motion.div>
+                            <motion.div
+                                animate={{y: [0, -100, 0], backgroundColor: ["rgb(20 184 166)", "rgb(232 121 249)", "rgb(20 184 166)"]}}
+                                transition={{delay: 0.1, repeat: Infinity, repeatDelay: 0.2, duration: 0.8 }}
+                                className="w-10 h-10 bg-teal-500 rounded-full">
+                            </motion.div>
+                            <motion.div
+                                animate={{y: [0, -100, 0], backgroundColor: ["rgb(20 184 166)", "rgb(232 121 249)", "rgb(20 184 166)"]}}
+                                transition={{delay: 0.1*2, repeat: Infinity, repeatDelay: 0.2, duration: 0.8 }}
+                                className="w-10 h-10 bg-teal-500 rounded-full">
+                            </motion.div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            className="flex justify-center overflow-y-scroll h-full"
+                            transition={{duration: 0.7, delay: 0.2}}
+                            initial={{opacity: 0, y: -300}}
+                            animate={{opacity: 1, y:0}}>
+                            <div className="w-full lg:w-3/5 xl:w-2/5 relative h-fit grid gap-2">
+                                <LayoutGroup>
+                                    <AnimatePresence>
+                                        {taskList}
+                                    </AnimatePresence>
+                                </LayoutGroup>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>  
             </div>
 
+            
 
             <div onClick={() => setShowCategoriesModal(true)} className="fixed bottom-6 md:bottom-36 right-1/4 translate-x-1/2 md:translate-x-0 md:right-10 bg-pink-500 w-12 h-8 md:w-12 md:h-12 inline-flex justify-center items-center rounded-lg md:rounded-2xl cursor-pointer shadow-md hover:bg-pink-700 duration-150">
                 <i className="fa-solid fa-tags" style={{ fontSize: "1.2em" }}></i>
@@ -242,7 +295,7 @@ export default function Todo() {
                             transition={{ duration: 0.2 }}
                         ></motion.div>
                         <div className="z-30 top-0 w-full h-full fixed place-content-center inline-flex justify-center items-center">
-                            <motion.div className="items-center bg-gray-700 text-gray-300 rounded-lg p-8"
+                            <motion.div className="modal items-center bg-gray-700 text-gray-300 rounded-lg p-8"
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 exit={{ scale: 0 }}
