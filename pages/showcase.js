@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { nanoid } from "nanoid";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
 import Task from '../components/Task';
@@ -32,14 +32,13 @@ export default function Todo() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [showCategoriesModal, setShowCategoriesModal] = useState(false);
-    const [showToast, setShowToast] = useState(false);
     const [idToDelete, setIdToDelete] = useState("");
     const [taskToEdit, setTaskToEdit] = useState();
     const [activeDate, setActiveDate] = useState(initDateToMidnight(new Date()));
-    const [toastMessage, setToastMessage] = useState("");
-
     const [tasks, setTasks] = useState(TASKS);
     const [categories, setCategories] = useState(CATEGORIES);
+    const [toasts, setToasts] = useState([]);
+    const toastRef = useRef('');
 
     // FILTER TASK FROM ACTIVE DATE
     const taskListUnsorted = tasks.filter((task) => {
@@ -138,13 +137,35 @@ export default function Todo() {
     }
 
     function displayToast(message) {
-        setToastMessage(message);
+        const id = nanoid();
+        var toast = (
+            <motion.div key={id} className="fixed left-1/2 bottom-5 px-8 bg-emerald-500 text-sm rounded-lg"
+                initial={{ scale: 0, y: -50-(50*toasts.length), x: "-50%" }}
+                animate={{ scale: 1, y: 0-(50*toasts.length), x: "-50%" }}
+                exit={{ opacity: 0, y: 10-(50*toasts.length) }}
+                transition={{ duration: 0.3, type: "spring" }}
+            >
+            <div className="text-center flex justify-between items-center py-2 px-3">
+                <svg className="absolute w-4 h-4 mr-2 left-3 fill-current" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path>
+                </svg>
+                <div className="font-bold text-center w-full">{message}</div>
+            </div>
+            </motion.div>
+        )
 
-        setShowToast(true);
-        setTimeout(() => {
-            setShowToast(false);
-        }, 2000);
+        setToasts([...toasts, toast]);
     }
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (toasts.length != 0) {
+                setToasts(toastRef.current.slice(1));}
+        }, 3000);
+        toastRef.current = toasts;
+    }, [toasts])
+
+
 
     function editCategory(editedCategory) {
         const updatedCategories = categories.map((category) => {
@@ -167,6 +188,7 @@ export default function Todo() {
 
         const remainingCategories = categories.filter((category) => category.id !== id);
         setCategories(remainingCategories);
+        displayToast("Category deleted!")
     }
 
     const [loading, setLoading] = useState(true);
@@ -305,21 +327,7 @@ export default function Todo() {
             </AnimatePresence>
 
             <AnimatePresence>
-                {showToast ? (
-                    <motion.div id="addToast" className="fixed left-1/2 bottom-5 px-8 bg-emerald-500 text-sm rounded-lg"
-                        initial={{ scale: 0, y: -50, x: "-50%" }}
-                        animate={{ scale: 1, y: 0, x: "-50%" }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.3, type: "spring" }}
-                    >
-                        <div className="text-center flex justify-between items-center py-2 px-3">
-                            <svg className="absolute w-4 h-4 mr-2 left-3 fill-current" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                <path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path>
-                            </svg>
-                            <div className="font-bold text-center w-full">{toastMessage}</div>
-                        </div>
-                    </motion.div>
-                ) : null}
+                {toasts}
             </AnimatePresence>
 
         </div>
