@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { motion } from "framer-motion"
-import { Link } from "react";
+import Link from 'next/link'
 
 export default function Portfolio() {
     return (
