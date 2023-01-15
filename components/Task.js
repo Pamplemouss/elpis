@@ -13,7 +13,7 @@ export default function Task(props) {
 
     useEffect(() => {
         setToggleState(props.checked)
-    })
+    }, [props.checked])
 
     function toggle() {
         if(!toggleState) {

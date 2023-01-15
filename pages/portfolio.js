@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { motion } from "framer-motion"
+import { Link } from "react";
 
 export default function Portfolio() {
     return (
@@ -21,7 +22,7 @@ export default function Portfolio() {
                             <motion.div
                                 className="align-middle rounded-xl hover:border-gray-700 border-[6px] border-gray-800 shadow-[0px_0px_20px_20px_rgba(0,0,0,0.3)] -skew-y-6 bg-gradient-to-br from-blue-500 to-fuchsia-500 hover:to-transparent hover:from-transparent duration-300"
                             >
-                                <a href="/showcase">
+                                <Link href="/showcase">
                                     <motion.video autoPlay muted loop id="myVideo"
                                         className="mix-blend-multiply"
                                         initial={{filter: "grayscale(1) brightness(1.6) contrast(0.85)"}}
@@ -30,7 +31,7 @@ export default function Portfolio() {
                                     >
                                         <source src="./todo.mp4" type="video/mp4"/>
                                     </motion.video>
-                                </a>
+                                </Link>
                             </motion.div>
                         </div>
                         <div className="text-right flex flex-col">
@@ -50,16 +51,16 @@ export default function Portfolio() {
                                 <span>MongoDB</span>
                             </div>
                             <div className="flex mt-4 justify-end gap-5 text-2xl">
-                                <a href="https://github.com/Pamplemouss/elpis">
+                                <Link href="https://github.com/Pamplemouss/elpis">
                                     <div className="inline-flex justify-center items-center from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-r hover:from-blue-500 hover:to-fuchsia-500 duration-500">
                                         <i className="fa-brands fa-github"></i>
                                     </div>
-                                </a>
-                                <a href="/showcase">
+                                </Link>
+                                <Link href="/showcase">
                                     <div className="inline-flex justify-center items-center from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-r hover:from-blue-500 hover:to-fuchsia-500 duration-500">
-                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
                                     </div>
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
