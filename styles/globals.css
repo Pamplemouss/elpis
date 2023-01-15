@@ -40,6 +40,11 @@ body {
   font-family: 'Comfortaa', cursive;
 }
 
+.montSerrat {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+}
+
 .custom-shadow {
   box-shadow: 0 10px 15px -2px rgb(0, 0, 0, 0.2), 0 4px 6px -2px rgb(0, 0, 0, 0.2);
 }
