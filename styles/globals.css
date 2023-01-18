@@ -36,7 +36,7 @@ body {
 
 
 body {
-  @apply bg-slate-900;
+  background-color: #0F172A;
   font-family: 'Comfortaa', cursive;
 }
 

@@ -1,8 +1,60 @@
 import Head from 'next/head'
 import { motion } from "framer-motion"
 import Link from 'next/link'
+import ProjectPreview from '../components/ProjectPreview';
 
 export default function Portfolio() {
+    const projects = [
+        {
+            solo: true,
+            name: "To do List",
+            year: "2022",
+            description: "A Web App to keep track of tasks and build new habits. Schedule one time or repeatable tasks and class them by categories. Remind you of drinking water, and have a healthier life!",
+            tags: ["NextJS", "TailwinCSS", "Golang", "MongoDB"],
+            previewLink: "./todo.webm",
+            gitLink: "https://github.com/Pamplemouss/elpis",
+            redirectLink: "/showcase",
+            mobile: false
+        },
+        {
+            solo: false,
+            name: "Hide and Seek Neural Network",
+            year: "2021",
+            description: "A 2D recreation of the Hide and Seek Google project: https://www.youtube.com/watch?v=Lu56xVlZ40M.",
+            tags: ["Qt", "C++", "Neural Network"],
+            previewLink: "./hideandseek.webm",
+            gitLink: "https://gitlab.com/Pamplemouss/hideandseek",
+            redirectLink: false,
+            mobile: false
+        },
+        {
+            solo: false,
+            name: "Bike and Motorcycle tracker",
+            year: "2019",
+            description: "Geolocalisation prototype to hide in your bike. Track its location in case of loosing or getting it stolen.",
+            tags: ["AdobeXD", "Arduino"],
+            previewLink: "./hermes.webm",
+            gitLink: false,
+            redirectLink: false,
+            mobile: true
+        },
+        {
+            solo: true,
+            name: "Piano notes trainer",
+            year: "2019",
+            description: "A simple app to train yourself recognizing notes on a Piano. Supports ABC and Do Re Mi notation.",
+            tags: ["NodeJS", "Express"],
+            previewLink: "./pianolynn.mp4",
+            gitLink: "https://github.com/Pamplemouss/piano-lynn",
+            redirectLink: false,
+            mobile: false
+        }
+    ];
+
+    const projectsPreviews = projects.map((project) => {
+        return <ProjectPreview data={project}></ProjectPreview>
+    });
+
     return (
         <>
         <Head>
@@ -15,56 +67,10 @@ export default function Portfolio() {
                 <div className="w-24 h-24 fixed left-6 top-4">
                     <img src="./logo.png"></img>
                 </div>
+
+
                 <div className="w-full mt-40 grid gap-60">
-
-                    <div className="m-auto w-8/12 flex ">
-                        <div className="flex-none flex flex-col w-1/2 justify-center items-center">
-                            <motion.div
-                                className="align-middle rounded-xl hover:border-gray-700 border-[6px] border-gray-800 shadow-[0px_0px_20px_20px_rgba(0,0,0,0.3)] -skew-y-6 bg-gradient-to-br from-blue-500 to-fuchsia-500 hover:to-transparent hover:from-transparent duration-300"
-                            >
-                                <Link href="/showcase">
-                                    <motion.video autoPlay muted loop id="myVideo"
-                                        className="mix-blend-multiply"
-                                        initial={{filter: "grayscale(1) brightness(1.6) contrast(0.85)"}}
-                                        whileHover={{filter: "grayscale(0) brightness(1) contrast(1)"}}
-                                        transition={{duration: 0.3}}
-                                    >
-                                        <source src="./todo.mp4" type="video/mp4"/>
-                                    </motion.video>
-                                </Link>
-                            </motion.div>
-                        </div>
-                        <div className="text-right flex flex-col">
-                            <div>
-                                <span className="font-medium text-transparent text-lg bg-clip-text bg-gradient-to-r from-blue-500 to-fuchsia-500">Personal Project</span>
-                            </div>
-                            <div className="text-4xl mt-2 font-bold text-slate-300">To do List</div>
-                            <div className="w-full">
-                                <div className="w-11/12 mt-8 mb-4 p-5 bg-[rgba(255,255,255,0.03)] custom-shadow text-slate-300 float-right">
-                                    A Web App to keep track of tasks and build new habits. Schedule one time or repeatable tasks and class them by categories. Remind you of drinking water, and have a <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-fuchsia-500">healthier life!</span>
-                                </div>
-                            </div>
-                            <div className="text-sm text-slate-300 flex gap-8 justify-end">
-                                <span>NextJS</span>
-                                <span>TailwindCSS</span>
-                                <span>Golang</span>
-                                <span>MongoDB</span>
-                            </div>
-                            <div className="flex mt-4 justify-end gap-5 text-2xl">
-                                <Link href="https://github.com/Pamplemouss/elpis">
-                                    <div className="inline-flex justify-center items-center from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-r hover:from-blue-500 hover:to-fuchsia-500 duration-500">
-                                        <i className="fa-brands fa-github"></i>
-                                    </div>
-                                </Link>
-                                <Link href="/showcase">
-                                    <div className="inline-flex justify-center items-center from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-r hover:from-blue-500 hover:to-fuchsia-500 duration-500">
-                                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                                    </div>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-
+                    {projectsPreviews}
                 </div>
             </div>
         </>
