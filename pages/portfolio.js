@@ -9,10 +9,10 @@ export default function Portfolio() {
     const projects = [
         {
             solo: true,
-            name: "To do List",
+            name: "To do",
             year: "2022",
             description: "A Web App to keep track of tasks and build new habits. Schedule one time or repeatable tasks and class them by categories. Remind you of drinking water, and have a healthier life!",
-            tags: ["NextJS", "TailwinCSS", "Golang", "MongoDB"],
+            tags: ["NextJS", "TailwindCSS", "Go", "MongoDB"],
             previewLink: "./todo.webm",
             gitLink: "https://github.com/Pamplemouss/elpis",
             redirectLink: "/showcase",
@@ -22,7 +22,7 @@ export default function Portfolio() {
             solo: false,
             name: "Hide and Seek Neural Network",
             year: "2021",
-            description: "A 2D recreation of the Hide and Seek Google project: https://www.youtube.com/watch?v=Lu56xVlZ40M.",
+            description: "An attempt to recreate a 2D version of the <a class='font-medium text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor' href='https://openai.com/blog/emergent-tool-use'>Hide and Seek Google project</a> in Qt. Agents with a neural network brain play a simple game of Hide & Seek, where intelligent and surprising behaviour can emerge.",
             tags: ["Qt", "C++", "Neural Network"],
             previewLink: "./hideandseek.webm",
             gitLink: "https://gitlab.com/Pamplemouss/hideandseek",
@@ -33,7 +33,7 @@ export default function Portfolio() {
             solo: false,
             name: "Bike and Motorcycle tracker",
             year: "2019",
-            description: "Geolocalisation prototype to hide in your bike. Track its location in case of loosing or getting it stolen.",
+            description: "Geolocalisation device prototype hidden in a bike headlight. Use the app to track its location in case of loosing or getting it stolen.",
             tags: ["AdobeXD", "Arduino"],
             previewLink: "./hermes.webm",
             gitLink: false,
@@ -44,7 +44,7 @@ export default function Portfolio() {
             solo: true,
             name: "Piano notes trainer",
             year: "2019",
-            description: "A simple app to train yourself recognizing notes on a Piano. Supports ABC and Do Re Mi notation.",
+            description: "A simple app to train yourself recognizing notes on a Piano.",
             tags: ["NodeJS", "Express"],
             previewLink: "./pianolynn.mp4",
             gitLink: "https://github.com/Pamplemouss/piano-lynn",
@@ -64,6 +64,51 @@ export default function Portfolio() {
         });
     });
 
+    // VARIANTS
+    const menu = {
+        visible: {
+            transition: {
+                when: "beforeChildren",
+                staggerChildren: .1,
+            }
+        },
+        hidden: {},
+    }
+
+    const item = {
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: .5,
+            }
+        },
+        hidden: { opacity: 0, y: -50 },
+    }
+
+    const titleBlockVariants = {
+        visible: {
+            transition: {
+                when: "beforeChildren",
+                delayChildren: 0.7,
+                staggerChildren: .15,
+            }
+        },
+        hidden: {},
+    }
+
+
+    const titleVariants = {
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: {
+                duration: .5,
+            },
+        },
+        hidden: { opacity: 0, x: -200 },
+    }
+
     return (
         <>
             <Head>
@@ -76,28 +121,35 @@ export default function Portfolio() {
                 
                 <div className={`fixed ${ atTheTop ? "h-24" : "h-16 shadow-xl"} w-screen backdrop-blur z-10 flex bg-[#0F172A]/70 duration-300`}>
                     <div className="w-12 h-12 grow m-auto ml-12">
-                        <img className="w-12 h-12" src="./logo.png"></img>
+                        <motion.img
+                            initial={{ opacity: 0, rotate: 500, x: 300 }}
+                            whileInView={{ opacity: 1, rotate: 0, x: 0 }}
+                            transition={{ type: "spring", duration: 1.5 }}
+                            className="w-12 h-12" src="./logo.png">
+                        </motion.img>
                     </div>
-                    <div className="flex gap-4 mr-16">
-                        <a href="#about" className="
-                                p-4 m-auto from-slate-400 to-slate-400 font-semibold text-sm text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300
-                                before:content-['01.'] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
-                            ">
-                                About
-                        </a>
-                        <a href="#projects" className="
-                                p-4 m-auto from-slate-400 to-slate-400 font-semibold text-sm text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300
-                                before:content-['02.'] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
-                            ">
-                                Projects
-                        </a>
-                        <a href="#contact" className="
-                                p-4 m-auto from-slate-400 to-slate-400 font-semibold text-sm text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300
-                                before:content-['03.'] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
-                            ">
-                                Contact
-                        </a>
-                        <span className="flex">
+                    <motion.div
+                        variants={menu}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        className="flex gap-4 mr-16"
+                    >
+                        {["About", "Projects", "Contact"].map((element, index) => {
+                            return (
+                                <motion.a
+                                    href={`#${element}`}
+                                    variants={item}
+                                    className={`
+                                    p-4 m-auto from-slate-400 to-slate-400 font-semibold text-sm text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor
+                                    before:content-['0${index+1}.'] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
+                                `}
+                                >
+                                    {element}
+                                </motion.a>
+                            )
+                        })}
+                        <motion.span variants={item} className="flex">
                             <a className="
                                 m-auto relative rounded py-2 px-4 border-firstColor border
                                 after:absolute after:h-full after:w-full after:bg-gradient-to-br after:from-firstColor after:to-secondColor after:block after:top-0 after:left-0 after:opacity-0 hover:after:opacity-20 before:duration-300
@@ -106,24 +158,29 @@ export default function Portfolio() {
                                     Resume
                                 </span>
                             </a>
-                        </span>
-                        
-                    </div>
+                        </motion.span>
+                    </motion.div>
                 </div>
 
 
                 <div className="m-auto w-9/12 xl:w-8/12 h-screen flex">
-                    <div className="m-auto -translate-y-10 xl:-translate-y-20">
-                        <div className="text-xl font-semibold mb-10">
+                    <motion.div
+                        variants={titleBlockVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        className="m-auto -translate-y-10 xl:-translate-y-20"
+                    >
+                        <motion.div variants={titleVariants} className="text-xl font-semibold mb-10">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">Hi, my name is</span>
-                        </div>
-                        <div className="text-slate-300 text-5xl xl:text-6xl font-bold mb-4">
+                        </motion.div>
+                        <motion.div variants={titleVariants} className="text-slate-300 text-5xl xl:text-6xl font-bold mb-4">
                             John Dufaye.
-                        </div>
-                        <div className="text-slate-500 text-5xl xl:text-6xl font-bold">
+                        </motion.div>
+                        <motion.div variants={titleVariants} className="text-slate-500 text-5xl xl:text-6xl font-bold">
                             I am a web & software developer.
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 </div>
 
                 <motion.div
@@ -134,8 +191,8 @@ export default function Portfolio() {
                     viewport={{ once: true }}
                 >
                     <div className="m-auto relative">
-                        <a id="about" className="absolute translate-y-[-20vh]"></a>
-                        <div className="flex gap-5">
+                        <a id="About" className="absolute translate-y-[-20vh]"></a>
+                        <div className="flex gap-5 mb-5">
                             <span className="m-auto text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">01.</span>
                             <span className=" text-3xl font-semibold text-slate-300">About me</span>
                             <div className="flex-1 flex">
@@ -143,10 +200,21 @@ export default function Portfolio() {
                             </div>
                         </div>
                         <div className="flex">
-                            <div className="w-4/5 flex">
+                            <div className="w-4/5 flex flex-col">
                                 <div className="m-auto text-slate-300">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis congue mollis tellus eu eleifend. Donec feugiat, arcu non varius tempor, lectus purus molestie nulla, nec tincidunt ante neque ac ex. Curabitur mollis augue eget velit posuere, ut dapibus urna dignissim. Sed volutpat, quam ac tempor euismod, sapien tellus fringilla leo, a viverra nisl augue vitae tellus. Pellentesque sollicitudin turpis id nibh consectetur porta. Nunc malesuada lacus nec egestas condimentum. Quisque auctor maximus est non consectetur. Maecenas magna velit, mollis sit amet ligula eu, gravida congue dolor. Morbi semper porttitor interdum. Praesent vitae metus convallis, suscipit metus sit amet, bibendum lectus. In finibus mattis ligula, vel efficitur elit faucibus a. Mauris vestibulum suscipit molestie. 
+                                    Hello! My name is John Dufaye and I enjoy creating things that pop off my head. My interest in web design and software development started back in highschool when I tried to create an app to help me learn music theory — turns out it helped me learn more about programing than music!
+                                    <br/><br/>Fast forward to today, I never stopped trying to give life to ideas. Being curious about several areas (such as music theory, game design, cooking, running, meditation), led me to create eclectic projetcs. From tabletop roleplaying online, to magic mirrors, I explored programming through many lenses.
+                                    <br/><br/>Here are a few technologies I’ve been working with recently:
                                 </div>
+                                <ul className="grid grid-cols-2 w-10/12 text-slate-500 font-semibold text-sm mt-3">
+                                    {["NodeJS", "React - NextJS", "MongoDB", "TailwindCSS", "Framer motion"].map((element) => {
+                                        return (
+                                            <li className="relative pl-5 before:text-firstColor before:absolute before:left-0 before:content-['▹']">
+                                                {element}
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
                             </div>
                             <div className="p-10 flex">
                                 <div className="
@@ -172,7 +240,7 @@ export default function Portfolio() {
                 </motion.div>
 
                 <div className="w-9/12 xl:w-8/12 m-auto mt-60">
-                    <a id="projects" className="absolute translate-y-[-20vh]"></a>
+                    <a id="Projects" className="absolute translate-y-[-20vh]"></a>
                     <div className="flex gap-5 mb-40">
                         <span className="m-auto text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">02.</span>
                         <span className="text-3xl font-semibold text-slate-300">Some things I’ve built</span>
@@ -186,8 +254,14 @@ export default function Portfolio() {
                 </div>
 
                 <div className="w-6/12 xl:w-5/12 h-screen m-auto text-center text-slate-300 flex-col flex">
-                    <a id="contact"></a>
-                    <div className="m-auto">
+                    <a id="Contact"></a>
+                    <motion.div
+                        className="m-auto"
+                        initial={{ translateY: 200, opacity: 0 }}
+                        whileInView={{ translateY: 0, opacity: 1 }}
+                        transition={{ duration: 0.7, delay: 0.1 }}
+                        viewport={{ once: true }}
+                    >
                         <div className="flex gap-5 mb-10">
                             <span className="m-auto text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">03.</span>
                             <span className=" text-3xl font-semibold text-slate-300">Contact</span>
@@ -199,7 +273,7 @@ export default function Portfolio() {
                             Get in Touch
                         </h1>
                         <div className="mt-10">
-                            Although I’m not currently looking for any new opportunities, my inbox is always open. Whether you have a question or just want to say hi, I’ll try my best to get back to you!
+                            Currently looking for new opportunities, my inbox is always open. Whether you have a question, a job offer, or just want to say hi, I’ll get back to you!
                         </div>
                         <div className="mt-20">
                             <a className="
@@ -211,13 +285,19 @@ export default function Portfolio() {
                                 </span>
                             </a>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
                 <div className="text-sm text-slate-300 text-center mb-10">
                     Designed & Built by John Dufaye
                 </div>
 
-                <div className="fixed bottom-0 left-10 flex flex-col gap-3 text-2xl text-slate-400 text-center">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 1.8}}
+                    viewport={{ once: true }}
+                    className="fixed bottom-0 left-10 flex flex-col gap-3 text-2xl text-slate-400 text-center"
+                >
                     <a href="https://github.com/Pamplemouss/" className="p-2 hover:-translate-y-1 justify-center items-center from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300">
                         <i className="fa-brands fa-github"></i>
                     </a>
@@ -230,9 +310,15 @@ export default function Portfolio() {
                     <div className="h-20">
                         <div className="m-auto h-full bg-slate-400 w-0.5"></div>
                     </div>
-                </div>
+                </motion.div>
 
-                <div className="fixed w-6 bottom-0 right-12 flex flex-col gap-8 text-slate-400 text-center">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 1.8}}
+                    viewport={{ once: true }}
+                    className="fixed w-6 bottom-0 right-12 flex flex-col gap-8 text-slate-400 text-center"
+                >
                     <a href="mailto:john.dufayeg@gmail.com" className="[writing-mode:vertical-lr] hover:-translate-y-2 font-semibold from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-b hover:from-firstColor hover:to-secondColor duration-300">
                         <span className="p-4">
                             john.dufaye@gmail.com
@@ -241,7 +327,7 @@ export default function Portfolio() {
                     <div className="h-20">
                         <div className="m-auto h-full bg-slate-400 w-0.5"></div>
                     </div>
-                </div>
+                </motion.div>
 
                 <motion.div className="z-50 fixed bottom-0 left-0 bg-gradient-to-r from-firstColor to-secondColor origin-left h-1 w-screen" style={{ scaleX: scrollYProgress }} />
             

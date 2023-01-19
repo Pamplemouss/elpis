@@ -33,14 +33,14 @@ export default function ProjectPreview(props) {
                     </Link>
                 </div>
             </div>
-            <div className="text-right flex flex-col">
+            <div className="text-right flex flex-col grow">
                 <div>
-                    <span className="font-medium text-transparent text-lg bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">{props.data.solo ? "Solo Project" : "Team Project"} - {props.data.year}</span>
+                    <span className="font-medium text-transparent text bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">{props.data.solo ? "Solo Project" : "Team Project"} - {props.data.year}</span>
                 </div>
-                <div className="text-4xl mt-2 font-bold text-slate-300">{props.data.name}</div>
+                <div className="text-3xl mt-1 font-bold text-slate-300">{props.data.name}</div>
                 <div className="w-full">
-                    <div className="w-11/12 mt-8 mb-4 p-5 bg-[rgba(255,255,255,0.03)] custom-shadow text-slate-300 float-right">
-                        {props.data.description}
+                    <div className="w-11/12 mt-6 mb-4 p-6 text-sm bg-[rgba(255,255,255,0.05)] rounded custom-shadow text-slate-300 float-right"
+                        dangerouslySetInnerHTML={{ __html: props.data.description }}>
                     </div>
                 </div>
                 <div className="text-sm text-slate-300 flex gap-8 justify-end">
