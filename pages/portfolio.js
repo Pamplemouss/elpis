@@ -54,7 +54,7 @@ export default function Portfolio() {
     ];
 
     const projectsPreviews = projects.map((project) => {
-        return <ProjectPreview key={project.name} data={project}></ProjectPreview>
+        return <ProjectPreview key={Math.random()} data={project}></ProjectPreview>
     });
 
     useEffect(() => {
@@ -136,13 +136,16 @@ export default function Portfolio() {
                         className="flex gap-4 mr-16"
                     >
                         {["About", "Projects", "Contact"].map((element, index) => {
+                            var before = "0" + (index+1) + ".";
                             return (
                                 <motion.a
+                                    key={index+element}
+                                    before={before}
                                     href={`#${element}`}
                                     variants={item}
                                     className={`
                                     p-4 m-auto from-slate-400 to-slate-400 font-semibold text-sm text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor
-                                    before:content-['0${index+1}.'] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
+                                    before:content-[attr(before)] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
                                 `}
                                 >
                                     {element}
@@ -167,7 +170,7 @@ export default function Portfolio() {
                     <motion.div
                         variants={titleBlockVariants}
                         initial="hidden"
-                        whileInView="visible"
+                        animate="visible"
                         viewport={{ once: true }}
                         className="m-auto -translate-y-10 xl:-translate-y-20"
                     >
@@ -207,9 +210,9 @@ export default function Portfolio() {
                                     <br/><br/>Here are a few technologies I’ve been working with recently:
                                 </div>
                                 <ul className="grid grid-cols-2 w-10/12 text-slate-500 font-semibold text-sm mt-3">
-                                    {["NodeJS", "React - NextJS", "MongoDB", "TailwindCSS", "Framer motion"].map((element) => {
+                                    {["NodeJS", "React - NextJS", "MongoDB", "TailwindCSS", "Framer motion"].map((element, index) => {
                                         return (
-                                            <li className="relative pl-5 before:text-firstColor before:absolute before:left-0 before:content-['▹']">
+                                            <li key={Math.random()} className="relative pl-5 before:text-firstColor before:absolute before:left-0 before:content-['▹']">
                                                 {element}
                                             </li>
                                         )
@@ -236,7 +239,6 @@ export default function Portfolio() {
                             </div>
                         </div>
                     </div>
-                    
                 </motion.div>
 
                 <div className="w-9/12 xl:w-8/12 m-auto mt-60">
@@ -287,6 +289,7 @@ export default function Portfolio() {
                         </div>
                     </motion.div>
                 </div>
+                
                 <div className="text-sm text-slate-300 text-center mb-10">
                     Designed & Built by John Dufaye
                 </div>
