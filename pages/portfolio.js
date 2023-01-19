@@ -1,8 +1,11 @@
 import Head from 'next/head'
-import { motion } from "framer-motion"
+import { motion, useScroll } from "framer-motion"
 import ProjectPreview from '../components/ProjectPreview';
+import { useState, useEffect } from 'react';
 
 export default function Portfolio() {
+    const { scrollYProgress } = useScroll();
+    const [atTheTop, setAtTheTop] = useState(true);
     const projects = [
         {
             solo: true,
@@ -47,11 +50,18 @@ export default function Portfolio() {
             gitLink: "https://github.com/Pamplemouss/piano-lynn",
             redirectLink: false,
             mobile: false
-        }
+        },
     ];
 
     const projectsPreviews = projects.map((project) => {
         return <ProjectPreview key={project.name} data={project}></ProjectPreview>
+    });
+
+    useEffect(() => {
+        document.addEventListener("scroll", (event) => {
+            if (atTheTop && window.scrollY != 0) setAtTheTop(false);
+            if (!atTheTop && window.scrollY== 0) setAtTheTop(true);
+        });
     });
 
     return (
@@ -63,12 +73,68 @@ export default function Portfolio() {
                 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" /> 
             </Head>
             <div className="montSerrat">
-                <div className="w-24 h-24 fixed left-6 top-4">
-                    <img src="./logo.png"></img>
+                
+                <div className={`fixed ${ atTheTop ? "h-24" : "h-16 shadow-xl"} w-screen backdrop-blur z-10 flex bg-[#0F172A]/70 duration-300`}>
+                    <div className="w-12 h-12 grow m-auto ml-12">
+                        <img className="w-12 h-12" src="./logo.png"></img>
+                    </div>
+                    <div className="flex gap-4 mr-16">
+                        <a href="#about" className="
+                                p-4 m-auto from-slate-400 to-slate-400 font-semibold text-sm text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300
+                                before:content-['01.'] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
+                            ">
+                                About
+                        </a>
+                        <a href="#projects" className="
+                                p-4 m-auto from-slate-400 to-slate-400 font-semibold text-sm text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300
+                                before:content-['02.'] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
+                            ">
+                                Projects
+                        </a>
+                        <a href="#contact" className="
+                                p-4 m-auto from-slate-400 to-slate-400 font-semibold text-sm text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300
+                                before:content-['03.'] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
+                            ">
+                                Contact
+                        </a>
+                        <span className="flex">
+                            <a className="
+                                m-auto relative rounded py-2 px-4 border-firstColor border
+                                after:absolute after:h-full after:w-full after:bg-gradient-to-br after:from-firstColor after:to-secondColor after:block after:top-0 after:left-0 after:opacity-0 hover:after:opacity-20 before:duration-300
+                            " href="./resume.pdf">
+                                <span className="font-semibold text-sm -translate-y-2 text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">
+                                    Resume
+                                </span>
+                            </a>
+                        </span>
+                        
+                    </div>
                 </div>
 
-                <div className="m-auto w-9/12 xl:w-7/12 h-screen flex">
-                    <div className="m-auto">
+
+                <div className="m-auto w-9/12 xl:w-8/12 h-screen flex">
+                    <div className="m-auto -translate-y-10 xl:-translate-y-20">
+                        <div className="text-xl font-semibold mb-10">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">Hi, my name is</span>
+                        </div>
+                        <div className="text-slate-300 text-5xl xl:text-6xl font-bold mb-4">
+                            John Dufaye.
+                        </div>
+                        <div className="text-slate-500 text-5xl xl:text-6xl font-bold">
+                            I am a web & software developer.
+                        </div>
+                    </div>
+                </div>
+
+                <motion.div
+                    className="m-auto w-9/12 xl:w-7/12 flex mt-20"
+                    initial={{ translateX: -200, opacity: 0 }}
+                    whileInView={{ translateX: 0, opacity: 1 }}
+                    transition={{ duration: 0.7, delay: 0.1 }}
+                    viewport={{ once: true }}
+                >
+                    <div className="m-auto relative">
+                        <a id="about" className="absolute translate-y-[-20vh]"></a>
                         <div className="flex gap-5">
                             <span className="m-auto text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">01.</span>
                             <span className=" text-3xl font-semibold text-slate-300">About me</span>
@@ -79,13 +145,7 @@ export default function Portfolio() {
                         <div className="flex">
                             <div className="w-4/5 flex">
                                 <div className="m-auto text-slate-300">
-                            Hello! My name is Brittany and I enjoy creating things that live on the internet. My interest in web development started back in 2012 when I decided to try editing custom Tumblr themes — turns out hacking together a custom reblog button taught me a lot about HTML & CSS!
-
-        Fast-forward to today, and I’ve had the privilege of working at an advertising agency, a start-up, a huge corporation, and a student-led design studio. My main focus these days is building accessible, inclusive products and digital experiences at Upstatement for a variety of clients.
-
-        I also recently launched a course that covers everything you need to build a web app with the Spotify API using Node & React.
-
-        Here are a few technologies I’ve been working with recently:
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis congue mollis tellus eu eleifend. Donec feugiat, arcu non varius tempor, lectus purus molestie nulla, nec tincidunt ante neque ac ex. Curabitur mollis augue eget velit posuere, ut dapibus urna dignissim. Sed volutpat, quam ac tempor euismod, sapien tellus fringilla leo, a viverra nisl augue vitae tellus. Pellentesque sollicitudin turpis id nibh consectetur porta. Nunc malesuada lacus nec egestas condimentum. Quisque auctor maximus est non consectetur. Maecenas magna velit, mollis sit amet ligula eu, gravida congue dolor. Morbi semper porttitor interdum. Praesent vitae metus convallis, suscipit metus sit amet, bibendum lectus. In finibus mattis ligula, vel efficitur elit faucibus a. Mauris vestibulum suscipit molestie. 
                                 </div>
                             </div>
                             <div className="p-10 flex">
@@ -109,9 +169,10 @@ export default function Portfolio() {
                         </div>
                     </div>
                     
-                </div>
+                </motion.div>
 
-                <div className="w-9/12 xl:w-8/12 m-auto mt-40">
+                <div className="w-9/12 xl:w-8/12 m-auto mt-60">
+                    <a id="projects" className="absolute translate-y-[-20vh]"></a>
                     <div className="flex gap-5 mb-40">
                         <span className="m-auto text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">02.</span>
                         <span className="text-3xl font-semibold text-slate-300">Some things I’ve built</span>
@@ -119,13 +180,14 @@ export default function Portfolio() {
                             <div className="m-auto w-full h-0.5 bg-slate-700"></div>
                         </div>
                     </div>
-                    <div className="grid gap-60">
+                    <div className="grid gap-80">
                         {projectsPreviews}
                     </div>
                 </div>
 
                 <div className="w-6/12 xl:w-5/12 h-screen m-auto text-center text-slate-300 flex-col flex">
-                        <div className="m-auto">
+                    <a id="contact"></a>
+                    <div className="m-auto">
                         <div className="flex gap-5 mb-10">
                             <span className="m-auto text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">03.</span>
                             <span className=" text-3xl font-semibold text-slate-300">Contact</span>
@@ -180,6 +242,9 @@ export default function Portfolio() {
                         <div className="m-auto h-full bg-slate-400 w-0.5"></div>
                     </div>
                 </div>
+
+                <motion.div className="z-50 fixed bottom-0 left-0 bg-gradient-to-r from-firstColor to-secondColor origin-left h-1 w-screen" style={{ scaleX: scrollYProgress }} />
+            
             </div>
         </>
     )

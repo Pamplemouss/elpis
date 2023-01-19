@@ -15,7 +15,7 @@ export default function ProjectPreview(props) {
             className="m-auto flex"
             initial={{ translateY: 0, scale: 0.5, opacity: 0 }}
             whileInView={{ translateY: 0, scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 200, duration: 0.9 }}
+            transition={{ type: "spring", stiffness: 200, duration: 0.9, delay: 0.2 }}
             viewport={{ once: true }}
         >
             
