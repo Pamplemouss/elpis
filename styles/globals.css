@@ -21,20 +21,9 @@ body {
   background: rgb(29, 39, 56);
 }
 
-@media (max-width: 640px) {
-    body {
-      position: fixed;
-      width: 100vw;
-    }
-}
-
-
-
 * {
   -webkit-tap-highlight-color: transparent;
 }
-
-
 
 body {
   background-color: #0F172A;
@@ -52,4 +41,46 @@ body {
 
 .active .slot {
   @apply visible;
+}
+
+
+
+
+
+#nav-icon span:nth-child(1) {
+  top: 6px;
+}
+
+#nav-icon span:nth-child(2),#nav-icon span:nth-child(3) {
+  top: 16px;
+}
+
+#nav-icon span:nth-child(4) {
+  top: 26px;
+}
+
+#nav-icon.open span:nth-child(1) {
+  top: 18px;
+  width: 0%;
+  left: 50%;
+}
+
+#nav-icon.open span:nth-child(2) {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+#nav-icon.open span:nth-child(3) {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+#nav-icon.open span:nth-child(4) {
+  top: 18px;
+  width: 0%;
+  left: 50%;
 }

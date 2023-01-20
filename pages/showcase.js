@@ -263,7 +263,7 @@ export default function Todo() {
                             transition={{duration: 1}}
                             initial={{opacity: 0, y: -300}}
                             animate={{opacity: 1, y:0}}>
-                            <div className="w-full lg:w-3/5 xl:w-2/5 relative h-fit grid gap-2">
+                            <div className="w-full lg:w-3/5 xl:w-2/5 relative h-fit grid gap-2 overflow-hidden">
                                 <LayoutGroup>
                                     <AnimatePresence>
                                         {taskList}
