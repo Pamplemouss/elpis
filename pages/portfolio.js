@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { AnimatePresence, motion, useScroll } from "framer-motion"
 import ProjectPreview from '../components/ProjectPreview';
 import { useState, useEffect } from 'react';
-import { nanoid } from 'nanoid';
+import { nanoid } from "nanoid";
 
 export default function Portfolio() {
     const { scrollYProgress } = useScroll();
@@ -132,10 +132,10 @@ export default function Portfolio() {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
                 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" /> 
             </Head>
-            <div className={`montSerrat ${menuOpen ? "overflow-hidden" : ""}`}>
+            <div className="montSerrat bg-backgroundColor">
                 
                 {/* TOP BAR */}
-                <div className={`z-30 fixed flex ${ atTheTop ? "h-24" : "h-16 shadow-xl"} w-screen ${menuOpen ? "shadow-none" : "backdrop-blur bg-[#0F172A]/70"} duration-300`}>
+                <div className={`z-30 fixed flex ${ atTheTop ? "h-24" : "h-16 shadow-xl"} w-screen ${menuOpen ? "shadow-none" : "backdrop-blur bg-backgroundColor/70"} duration-300`}>
                     <div className="w-12 h-12 grow m-auto ml-6 md:ml-12">
                         <motion.img
                             initial={{ opacity: 0, rotate: 500, x: 300 }}
@@ -182,9 +182,9 @@ export default function Portfolio() {
                     </motion.div>
                     <div className="z-30 flex md:hidden mr-6">
                         <div onClick={() => setMenuOpen(!menuOpen)} id="nav-icon" className="m-auto w-[34px] h-[34px] rotate-0 cursor-pointer">
-                            {Array(4).fill("").map(() => {
+                            {Array(4).fill("").map((element, index) => {
                                 return (
-                                    <span key={nanoid()} className="duration-300 ease-in-out h-0.5 left-0 w-full rotate-0 absolute block bg-gradient-to-r from-firstColor to-secondColor"></span>
+                                    <span key={`navbar${index}`} className="duration-300 ease-in-out h-0.5 left-0 w-full rotate-0 absolute block bg-gradient-to-r from-firstColor to-secondColor"></span>
                                 )
                             })}
                         </div>
@@ -282,7 +282,7 @@ export default function Portfolio() {
                             <div className="md:w-4/5 flex flex-col">
                                 <div className="m-auto text-slate-300 text-sm md:text-base">
                                     Hello! My name is John Dufaye and I enjoy creating things that pop off my head. My interest in web design and software development started back in highschool when I tried to create an app to help me learn music theory — turns out it helped me learn more about programing than music!
-                                    <br/><br/>Fast forward to today, I never stopped trying to give life to ideas. Being curious about several areas (such as music theory, game design, cooking, running, meditation), led me to create eclectic projetcs. From tabletop roleplaying online, to magic mirrors, I explored programming through many lenses.
+                                    <br/><br/>Fast forward to today, I never stopped trying to give life to ideas. Being curious about several areas (such as music theory, game design, cooking, running, meditation), led me to create eclectic projects. From tabletop roleplaying online, to magic mirrors, I explored programming through many lenses.
                                     <br/><br/>Here are a few technologies I’ve been working with recently:
                                 </div>
                                 <ul className="grid grid-cols-2 md:w-10/12 text-slate-500 font-semibold text-sm mt-3">
@@ -307,6 +307,7 @@ export default function Portfolio() {
                                             src="/me.png"
                                             initial={{filter: "grayscale(1) brightness(1.4) contrast(0.85)"}}
                                             whileHover={{filter: "grayscale(0) brightness(1) contrast(1)"}}
+                                            whileFocus={{filter: "grayscale(0) brightness(1) contrast(1)"}}
                                             transition={{duration: 0.3}}
                                         ></motion.img>
                                     </div>
@@ -382,7 +383,7 @@ export default function Portfolio() {
                     </div>
                 </div>
 
-                <div className="text-sm text-slate-300 text-center mb-10">
+                <div className="text-sm text-slate-300 text-center pb-10">
                     Designed & Built by John Dufaye
                 </div>
 

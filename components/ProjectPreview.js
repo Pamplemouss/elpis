@@ -28,6 +28,7 @@ export default function ProjectPreview(props) {
                                 className={`mix-blend-multiply ${props.data.redirectLink ? "cursor-pointer" : null}`}
                                 initial={{filter: "grayscale(1) brightness(1.6) contrast(0.85)"}}
                                 whileHover={{filter: "grayscale(0) brightness(1) contrast(1)"}}
+                                whileFocus={{filter: "grayscale(0) brightness(1) contrast(1)"}}
                                 transition={{duration: 0.3}}
                             >
                                 <source src={props.data.previewLink} type="video/mp4"/>
