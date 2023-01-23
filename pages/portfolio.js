@@ -179,7 +179,7 @@ export default function Portfolio() {
                         viewport={{ once: true }}
                         className="flex gap-4 mr-16 hidden md:flex"
                     >
-                        <Link locale={`${i18n.language == "fr" ? "en" : "fr"}`} href="/portfolio" variants={item} className="">
+                        <Link locale={`${i18n.language == "fr" ? "en" : "fr"}`} href="/portfolio" variants={item}>
                             <motion.span variants={item} className="mr-10 m-auto text-slate-500 hover:text-slate-400 font-semibold cursor-pointer">{i18n.language == "fr" ? "EN" : "FR"}</motion.span>
                         </Link>
 
@@ -211,7 +211,7 @@ export default function Portfolio() {
                             </a>
                         </motion.span>
                     </motion.div>
-                    <Link href={`./${i18n.language == "fr" ? "en" : "fr"}/portfolio`} variants={item} className="">
+                    <Link locale={`${i18n.language == "fr" ? "en" : "fr"}`} href="/portfolio">
                         <motion.span variants={item} className="md:hidden p-3 mr-6 m-auto text-slate-500 hover:text-slate-400 font-semibold cursor-pointer">{i18n.language == "fr" ? "EN" : "FR"}</motion.span>
                     </Link>
                     <div className="z-30 flex md:hidden mr-6">
