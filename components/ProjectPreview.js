@@ -28,7 +28,7 @@ export default function ProjectPreview(props) {
                                 className={`mix-blend-multiply ${props.data.redirectLink ? "cursor-pointer" : null}`}
                                 initial={{filter: "grayscale(1) brightness(1.6) contrast(0.85)"}}
                                 whileHover={{filter: "grayscale(0) brightness(1) contrast(1)"}}
-                                whileFocus={{filter: "grayscale(0) brightness(1) contrast(1)"}}
+                                whileTap={{filter: "grayscale(0) brightness(1) contrast(1)"}}
                                 transition={{duration: 0.3}}
                             >
                                 <source src={props.data.previewLink} type="video/mp4"/>
@@ -41,7 +41,7 @@ export default function ProjectPreview(props) {
                     <div className="hidden md:block text-3xl mt-1 font-bold text-slate-300">{props.data.name}</div>
                     <div className="flex md:block">
                         <div className="mt-6 mb-7 md:w-11/12 m-auto md:mx-0 md:mt-6 mb-4 md:p-6 text-sm md:bg-[rgba(255,255,255,0.05)] md:rounded md:shadow-xl text-slate-300 md:float-right"
-                            dangerouslySetInnerHTML={{ __html: props.data.description }}>
+                            dangerouslySetInnerHTML={{ __html: props.data.description[props.lang] }}>
                         </div>
                     </div>
                     <div className="md:w-full mb-6 md:mb-0 flex-wrap text-xs md:text-sm text-slate-300 flex gap-x-4 md:gap-8 md:justify-end">

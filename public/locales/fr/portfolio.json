@@ -1,0 +1,24 @@
+{
+    "menu": {
+        "about": "A propos",
+        "projects": "Projets",
+        "contact": "Contact",
+        "resume": "CV"
+    },
+    "intro": "<0><0>Hey, je m'appelle</0></0><1>John Dufaye.</1><2>Je suis développeur web & logiciel.</2>",
+    "about": {
+        "title": "A propos",
+        "presentation": "Bonjour ! Je m'appelle John Dufaye et j'aime donner vie aux idées qui me viennent. Mon intérêt pour le web design et le développement a démarré au lycée alors que j'essayais de créer une application pour m'aider à apprendre la théorie musicale — il s'avère que j'ai plus appris en développement qu'en musique !<br/><br/>Jusqu'à aujourd'hui, je n'ai jamais cessé de donner vie à mes idées. Etant curieux et intéressé par plusieurs domaines (comme la théorie musicale, le game design, la cuisine, la course, la méditation), j'ai été amené à créer des projets éclectiques. Du jeu de rôle en ligne, au miroir magique, j'ai exploré le développement à travers plusieurs prismes.<br/><br/>Voici quelques technos avec lesquelles j'ai travaillé récemment:"
+    },
+    "projects": {
+        "title": "Mes projets"
+    },
+    "contact": {
+        "title": "Contact",
+        "getInTouch": "Dites bonjour",
+        "content": "Actuellement à la recherche de nouvelles opportunités, ma boîte mail est ouverte. Que vous ayez une question, souhaitiez me proposer une offre d'emploi, ou juste dire bonjour, je vous répondrai très vite !",
+        "sayHello": "N'hésitez pas"
+    },
+    "credit": "Designé part John Dufaye.",
+    "resumeURL": "/CV.pdf"
+}

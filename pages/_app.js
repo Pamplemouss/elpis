@@ -1,5 +1,7 @@
 import '../styles/globals.css'
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { appWithTranslation } from 'next-i18next'
+import nextI18NextConfig from '../next-i18next.config.js'
 
 const client = new ApolloClient({
     uri: process.env.NEXT_PUBLIC_GRAPHQL_URL,
@@ -14,4 +16,4 @@ function MyApp({ Component, pageProps }) {
   )
 }
 
-export default MyApp
+export default appWithTranslation(MyApp, nextI18NextConfig)

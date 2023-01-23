@@ -1,10 +1,26 @@
 import Head from 'next/head'
+import Link from 'next/link'
 import { AnimatePresence, motion, useScroll } from "framer-motion"
-import ProjectPreview from '../components/ProjectPreview';
 import { useState, useEffect } from 'react';
-import { nanoid } from "nanoid";
+
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { Trans } from 'next-i18next';
+
+import ProjectPreview from '../components/ProjectPreview';
+import { initReactI18next } from 'react-i18next';
+
+
+export async function getStaticProps({ locale }) {
+    return {
+      props: {
+        ...(await serverSideTranslations(locale, ['portfolio'])),
+      }
+    }
+}
 
 export default function Portfolio() {
+    const { t, i18n } = useTranslation('portfolio', { useSuspense: false });
     const { scrollYProgress } = useScroll();
     const [atTheTop, setAtTheTop] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -13,9 +29,12 @@ export default function Portfolio() {
             solo: true,
             name: "To do",
             year: "2022",
-            description: "A Web App to keep track of tasks and build new habits. Schedule one time or repeatable tasks and class them by categories. Remind you of drinking water, and have a healthier life!",
+            description: {
+                fr:"Une application web pour garder une trace des choses à faire, et acquérir de nouvelles habitudes. Programmez des tâches uniques ou répétables et classez les par catégorie. Pensez à boire de l'eau, et rendez votre vie plus saine !",
+                en: "A Web App to keep track of tasks and build new habits. Schedule one time or repeatable tasks and class them by categories. Remind you of drinking water, and have a healthier life!",
+            },
             tags: ["NextJS", "TailwindCSS", "Go", "MongoDB"],
-            previewLink: "./todo.webm",
+            previewLink: "/video/todo.webm",
             gitLink: "https://github.com/Pamplemouss/elpis",
             redirectLink: "/showcase",
             mobile: false
@@ -24,9 +43,12 @@ export default function Portfolio() {
             solo: false,
             name: "Hide and Seek Neural Network",
             year: "2021",
-            description: "An attempt to recreate a 2D version of the <a class='font-medium text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor' href='https://openai.com/blog/emergent-tool-use'>Hide and Seek Google project</a> in Qt. Agents with a neural network brain play a simple game of Hide & Seek, where intelligent and surprising behaviour can emerge.",
+            description: {
+                fr: "Tentative de recréer une version 2D du projet <a class='font-medium text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor' href='https://openai.com/blog/emergent-tool-use'>Hide and Seek de Google</a> avec Qt. Des agents dôtés d'un réseau de neurones jouent à un simple jeu de cache-cache, où des comportements intelligents et surprenants peuvent émerger.",
+                en: "An attempt to recreate a 2D version of the <a class='font-medium text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor' href='https://openai.com/blog/emergent-tool-use'>Hide and Seek Google project</a> in Qt. Agents with a neural network brain play a simple game of Hide & Seek, where intelligent and surprising behaviour can emerge.",
+            },
             tags: ["Qt", "C++", "Neural Network"],
-            previewLink: "./hideandseek.webm",
+            previewLink: "/video/hideandseek.webm",
             gitLink: "https://gitlab.com/Pamplemouss/hideandseek",
             redirectLink: false,
             mobile: false
@@ -35,9 +57,12 @@ export default function Portfolio() {
             solo: false,
             name: "Bike and Motorcycle tracker",
             year: "2019",
-            description: "Geolocalisation device prototype hidden in a bike headlight. Use the app to track its location in case of loosing or getting it stolen.",
+            description: {
+                fr: "Prototype d'un appareil de géolocalisation à cacher dans une lampe pour vélo. L'application permet de retrouver sa position en cas de perte ou de vol.",
+                en: "Geolocalisation device prototype hidden in a bike headlight. Use the app to track its location in case of loosing or getting it stolen.",
+            },
             tags: ["AdobeXD", "Arduino"],
-            previewLink: "./hermes.webm",
+            previewLink: "/video/hermes.webm",
             gitLink: false,
             redirectLink: false,
             mobile: true
@@ -46,9 +71,12 @@ export default function Portfolio() {
             solo: true,
             name: "Piano notes trainer",
             year: "2019",
-            description: "A simple app to train yourself recognizing notes on a Piano.",
+            description: {
+                fr: "Une simple application pour s'entraîner à reconnaître les notes rapidement sur un piano.",
+                en: "A simple app to train yourself recognizing notes on a piano.",
+            },
             tags: ["NodeJS", "Express"],
-            previewLink: "./pianolynn.mp4",
+            previewLink: "/video/pianolynn.mp4",
             gitLink: "https://github.com/Pamplemouss/piano-lynn",
             redirectLink: false,
             mobile: false
@@ -56,7 +84,7 @@ export default function Portfolio() {
     ];
 
     const projectsPreviews = projects.map((project) => {
-        return <ProjectPreview key={project.name} data={project}></ProjectPreview>
+        return <ProjectPreview key={project.name} data={project} lang={i18n.language}></ProjectPreview>
     });
 
     useEffect(() => {
@@ -133,7 +161,6 @@ export default function Portfolio() {
                 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" /> 
             </Head>
             <div className="montSerrat bg-backgroundColor">
-                
                 {/* TOP BAR */}
                 <div className={`z-30 fixed flex ${ atTheTop ? "h-24" : "h-16 shadow-xl"} w-screen ${menuOpen ? "shadow-none" : "backdrop-blur bg-backgroundColor/70"} duration-300`}>
                     <div className="w-12 h-12 grow m-auto ml-6 md:ml-12">
@@ -141,7 +168,7 @@ export default function Portfolio() {
                             initial={{ opacity: 0, rotate: 500, x: 300 }}
                             whileInView={{ opacity: 1, rotate: 0, x: 0 }}
                             transition={{ type: "spring", duration: 1.5 }}
-                            className="w-12 h-12" src="./logo.png">
+                            className="w-12 h-12" src="/img/logo.png">
                         </motion.img>
                     </div>
 
@@ -152,20 +179,24 @@ export default function Portfolio() {
                         viewport={{ once: true }}
                         className="flex gap-4 mr-16 hidden md:flex"
                     >
-                        {["About", "Projects", "Contact"].map((element, index) => {
+                        <Link href={`./${i18n.language == "fr" ? "en" : "fr"}/portfolio`} variants={item} className="">
+                            <motion.span variants={item} className="mr-10 m-auto text-slate-500 hover:text-slate-400 font-semibold cursor-pointer">{i18n.language == "fr" ? "EN" : "FR"}</motion.span>
+                        </Link>
+
+                        {[{content: t("menu.about"), target: "#About"}, {content: t("menu.projects"), target: "#Projects"}, {content:t("menu.contact"), target: "#Contact"}].map((element, index) => {
                             var before = "0" + (index+1) + ".";
                             return (
                                 <motion.a
                                     key={index+element}
                                     before={before}
-                                    href={`#${element}`}
+                                    href={element.target}
                                     variants={item}
                                     className={`
                                         p-4 m-auto from-slate-400 to-slate-400 font-semibold text-sm text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor
                                         before:content-[attr(before)] before:mr-2 before:font-semibold before:text-transparent before:bg-clip-text before:bg-gradient-to-r before:from-firstColor before:to-secondColor
                                     `}
                                 >
-                                    {element}
+                                    {element.content}
                                 </motion.a>
                             )
                         })}
@@ -173,13 +204,16 @@ export default function Portfolio() {
                             <a className="
                                 m-auto relative rounded py-2 px-4 border-firstColor border
                                 after:absolute after:h-full after:w-full after:bg-gradient-to-br after:from-firstColor after:to-secondColor after:block after:top-0 after:left-0 after:opacity-0 hover:after:opacity-20 before:duration-300
-                            " href="./resume.pdf">
+                            " href={t("resumeURL")}>
                                 <span className="font-semibold text-sm -translate-y-2 text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">
-                                    Resume
+                                    {t("menu.resume")}
                                 </span>
                             </a>
                         </motion.span>
                     </motion.div>
+                    <Link href={`./${i18n.language == "fr" ? "en" : "fr"}/portfolio`} variants={item} className="">
+                        <motion.span variants={item} className="md:hidden p-3 mr-6 m-auto text-slate-500 hover:text-slate-400 font-semibold cursor-pointer">{i18n.language == "fr" ? "EN" : "FR"}</motion.span>
+                    </Link>
                     <div className="z-30 flex md:hidden mr-6">
                         <div onClick={() => setMenuOpen(!menuOpen)} id="nav-icon" className="m-auto w-[34px] h-[34px] rotate-0 cursor-pointer">
                             {Array(4).fill("").map((element, index) => {
@@ -209,7 +243,7 @@ export default function Portfolio() {
                 {/* MENU */}
                 <div className={`z-20 fixed w-8/12 flex h-screen bg-slate-800 top-0 right-0 duration-300 ${menuOpen ? "" : "translate-x-full"}`}>
                     <div className="flex flex-col m-auto gap-14 -translate-y-6">
-                        {["About", "Projects", "Contact"].map((element, index) => {
+                        {[t("menu.about"), t("menu.projects"), t("menu.contact")].map((element, index) => {
                             var before = "0" + (index+1) + ".";
                             return (
                                 <motion.a
@@ -231,9 +265,9 @@ export default function Portfolio() {
                             <a className="
                                 m-auto relative rounded py-4 px-10 mt-8 border-firstColor border
                                 after:absolute after:h-full after:w-full after:bg-gradient-to-br after:from-firstColor after:to-secondColor after:block after:top-0 after:left-0 after:opacity-0 hover:after:opacity-20 before:duration-300
-                            " href="./resume.pdf">
+                            " href={t("resumeURL")}>
                                 <span className="font-semibold text-sm -translate-y-2 text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">
-                                    Resume
+                                    {t("menu.resume")}
                                 </span>
                             </a>
                         </motion.span>
@@ -248,16 +282,18 @@ export default function Portfolio() {
                         animate="visible"
                         viewport={{ once: true }}
                         className="m-auto -translate-y-10 xl:-translate-y-20"
-                    >
-                        <motion.div variants={titleVariants} className="text-xl font-semibold mb-5 md:mb-10">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">Hi, my name is</span>
-                        </motion.div>
-                        <motion.div variants={titleVariants} className="text-slate-300 text-4xl md:text-5xl xl:text-6xl font-bold mb-1 md:mb-4">
-                            John Dufaye.
-                        </motion.div>
-                        <motion.div variants={titleVariants} className="text-slate-500 text-4xl md:text-5xl xl:text-6xl font-bold">
-                            I am a web & software developer.
-                        </motion.div>
+                    >  
+                        <Trans t={t} i18nKey="intro">
+                            <motion.div variants={titleVariants} className="text-xl font-semibold mb-5 md:mb-10">
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">Hi, my name is</span>
+                            </motion.div>
+                            <motion.div variants={titleVariants} className="text-slate-300 text-4xl md:text-5xl xl:text-6xl font-bold mb-1 md:mb-4">
+                                John Dufaye.
+                            </motion.div>
+                            <motion.div variants={titleVariants} className="text-slate-500 text-4xl md:text-5xl xl:text-6xl font-bold">
+                                I am a web & software developer.
+                            </motion.div>
+                        </Trans>
                     </motion.div>
                 </div>
 
@@ -273,7 +309,7 @@ export default function Portfolio() {
                     <div className="m-auto relative">
                         <div className="flex gap-5 mb-5">
                             <span className="m-auto text-lg md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">01.</span>
-                            <span className="text-lg md:text-3xl font-semibold text-slate-300">About me</span>
+                            <span className="text-lg md:text-3xl font-semibold text-slate-300">{t("about.title")}</span>
                             <div className="flex-1 flex">
                                 <div className="m-auto w-full h-0.5 bg-slate-700"></div>
                             </div>
@@ -281,9 +317,7 @@ export default function Portfolio() {
                         <div className="flex flex-col md:flex-row">
                             <div className="md:w-4/5 flex flex-col">
                                 <div className="m-auto text-slate-300 text-sm md:text-base">
-                                    Hello! My name is John Dufaye and I enjoy creating things that pop off my head. My interest in web design and software development started back in highschool when I tried to create an app to help me learn music theory — turns out it helped me learn more about programing than music!
-                                    <br/><br/>Fast forward to today, I never stopped trying to give life to ideas. Being curious about several areas (such as music theory, game design, cooking, running, meditation), led me to create eclectic projects. From tabletop roleplaying online, to magic mirrors, I explored programming through many lenses.
-                                    <br/><br/>Here are a few technologies I’ve been working with recently:
+                                    <Trans t={t} i18nKey="about.presentation"></Trans>
                                 </div>
                                 <ul className="grid grid-cols-2 md:w-10/12 text-slate-500 font-semibold text-sm mt-3">
                                     {["NodeJS", "React - NextJS", "MongoDB", "TailwindCSS", "Framer motion"].map((element, index) => {
@@ -304,10 +338,10 @@ export default function Portfolio() {
                                     >
                                         <motion.img
                                             className="mix-blend-multiply"
-                                            src="/me.png"
+                                            src="/img/me.png"
                                             initial={{filter: "grayscale(1) brightness(1.4) contrast(0.85)"}}
                                             whileHover={{filter: "grayscale(0) brightness(1) contrast(1)"}}
-                                            whileFocus={{filter: "grayscale(0) brightness(1) contrast(1)"}}
+                                            whileTap={{filter: "grayscale(0) brightness(1) contrast(1)"}}
                                             transition={{duration: 0.3}}
                                         ></motion.img>
                                     </div>
@@ -323,7 +357,7 @@ export default function Portfolio() {
                     <a id="Projects" className="absolute -translate-y-20 md:translate-y-[-14vh]"></a>
                     <div className="flex gap-5 mb-8 md:mb-40">
                         <span className="m-auto text-lg md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">02.</span>
-                        <span className="text-lg md:text-3xl font-semibold text-slate-300">Some things I’ve built</span>
+                        <span className="text-lg md:text-3xl font-semibold text-slate-300">{t("projects.title")}</span>
                         <div className="flex-1 flex">
                             <div className="m-auto w-full h-0.5 bg-slate-700"></div>
                         </div>
@@ -345,16 +379,16 @@ export default function Portfolio() {
                     >
                         <div className="flex gap-5 mb-5 md:mb-10">
                             <span className="m-auto text-lg md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">03.</span>
-                            <span className="text-lg md:text-3xl font-semibold text-slate-300">Contact</span>
+                            <span className="text-lg md:text-3xl font-semibold text-slate-300">{t("contact.title")}</span>
                             <div className="flex-1 flex">
                                 <div className="m-auto w-full h-0.5 bg-slate-700"></div>
                             </div>
                         </div>
                         <h1 className="text-2xl md:text-4xl font-bold">
-                            Get in Touch
+                            {t("contact.getInTouch")}
                         </h1>
                         <div className="text-sm md:text-base mt-4 md:mt-10">
-                            Currently looking for new opportunities, my inbox is always open. Whether you have a question, a job offer, or just want to say hi, I’ll get back to you!
+                            {t("contact.content")}
                         </div>
                         <div className="mt-16 md:mt-20">
                             <a className="
@@ -362,7 +396,7 @@ export default function Portfolio() {
                                 after:absolute after:h-full after:w-full after:bg-gradient-to-br after:from-firstColor after:to-secondColor after:block after:top-0 after:left-0 after:opacity-0 hover:after:opacity-20 before:duration-300
                             " href="mailto:john.dufayeg@gmail.com">
                                 <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">
-                                    Say hello
+                                    {t("contact.sayHello")}
                                 </span>
                             </a>
                         </div>
@@ -384,7 +418,7 @@ export default function Portfolio() {
                 </div>
 
                 <div className="text-sm text-slate-300 text-center pb-10">
-                    Designed & Built by John Dufaye
+                    {t("credit")}
                 </div>
 
                 <motion.div
