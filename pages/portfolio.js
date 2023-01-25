@@ -394,7 +394,7 @@ export default function Portfolio() {
                             <a className="
                                 relative rounded py-5 px-7 border-firstColor border-2
                                 after:absolute after:h-full after:w-full after:bg-gradient-to-br after:from-firstColor after:to-secondColor after:block after:top-0 after:left-0 after:opacity-0 hover:after:opacity-20 before:duration-300
-                            " href="mailto:john.dufayeg@gmail.com">
+                            " href="mailto:john.dufaye@gmail.com">
                                 <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">
                                     {t("contact.sayHello")}
                                 </span>
