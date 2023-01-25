@@ -449,7 +449,7 @@ export default function Portfolio() {
                     viewport={{ once: true }}
                     className="fixed w-6 bottom-0 right-12 hidden md:flex flex-col gap-8 text-slate-400 text-center"
                 >
-                    <a href="mailto:john.dufayeg@gmail.com" className="[writing-mode:vertical-lr] hover:-translate-y-2 font-semibold from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-b hover:from-firstColor hover:to-secondColor duration-300">
+                    <a href="mailto:john.dufaye@gmail.com" className="[writing-mode:vertical-lr] hover:-translate-y-2 font-semibold from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-b hover:from-firstColor hover:to-secondColor duration-300">
                         <span className="p-4">
                             john.dufaye@gmail.com
                         </span>
