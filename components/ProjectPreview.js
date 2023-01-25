@@ -23,7 +23,7 @@ export default function ProjectPreview(props) {
                 <div className="mb-3 md:hidden text-2xl mt-1 font-bold text-slate-300">{props.data.name}</div>
                 <div className="flex-none flex flex-col md:w-1/2 justify-center items-center">
                     <div className={`${props.data.mobile ? "w-4/12" : null} overflow-hidden align-middle rounded-xl md:hover:border-gray-700 border-4 md:border-[6px] hover:border-gray-500 border-gray-600 md:border-gray-800 shadow-xl md:shadow-[0px_0px_20px_20px_rgba(0,0,0,0.3)] md:-skew-y-6 bg-gradient-to-br from-firstColor to-secondColor hover:to-white hover:from-white duration-300`}>
-                        <Link href={props.data.redirectLink ? props.data.redirectLink : ""}>
+                        <Link href={props.data.redirectLink ? props.data.redirectLink : "#0"}>
                             <motion.video autoPlay muted loop id="myVideo"
                                 className={`mix-blend-multiply ${props.data.redirectLink ? "cursor-pointer" : null}`}
                                 initial={{filter: "grayscale(1) brightness(1.6) contrast(0.85)"}}
