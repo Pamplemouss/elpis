@@ -47,7 +47,7 @@ export default function ProjectPreview(props) {
                     <div className="md:w-full mb-6 md:mb-0 flex-wrap text-xs md:text-sm text-slate-300 flex gap-x-4 md:gap-8 md:justify-end">
                         {tags}
                     </div>
-                    {props.data.gitLink && props.data.redirectLink ? (
+                    {props.data.gitLink || props.data.redirectLink ? (
                         <div className="flex mb-6 md:mt-4 md:mb-0 md:justify-end gap-8 md:gap-5 text-2xl"> 
                             {props.data.gitLink ? (
                                 <Link href={props.data.gitLink}>

@@ -27,6 +27,20 @@ export default function Portfolio() {
     const projects = [
         {
             solo: true,
+            name: "Eorguessr - Game App",
+            year: "2023",
+            description: {
+                fr:"Une version de Geoguessr adaptée pour le monde de Final Fantasy XIV. Joué par +20.000 utilisateurs à travers le monde.",
+                en: "A Geoguessr adapted for the world of Final Fantasy XIV. Played by +20.000 users around the world.",
+            },
+            tags: ["NextJS", "Typescript", "TailwindCSS", "Leaflet"],
+            previewLink: "/video/eorguessr.webm",
+            gitLink: false,
+            redirectLink: "https://eorguessr.com",
+            mobile: false
+        },
+        {
+            solo: true,
             name: "To do",
             year: "2022",
             description: {
