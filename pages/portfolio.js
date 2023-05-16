@@ -30,8 +30,8 @@ export default function Portfolio() {
             name: "Eorguessr - Game App",
             year: "2023",
             description: {
-                fr:"Une version de Geoguessr adaptée pour le monde de Final Fantasy XIV. Joué par +20.000 utilisateurs à travers le monde.",
-                en: "A Geoguessr adapted for the world of Final Fantasy XIV. Played by +20.000 users around the world.",
+                fr:"Une version de Geoguessr adaptée pour le monde de Final Fantasy XIV. Environ 1k users/jour.",
+                en: "A Geoguessr adapted for the world of Final Fantasy XIV. About 1k users/day.",
             },
             tags: ["NextJS", "Typescript", "TailwindCSS", "Leaflet"],
             previewLink: "/video/eorguessr.webm",
@@ -41,7 +41,7 @@ export default function Portfolio() {
         },
         {
             solo: true,
-            name: "To do",
+            name: "Daily Habits Tracker",
             year: "2022",
             description: {
                 fr:"Une application web pour garder une trace des choses à faire, et acquérir de nouvelles habitudes. Programmez des tâches uniques ou répétables et classez les par catégorie. Pensez à boire de l'eau, et rendez votre vie plus saine !",
@@ -448,9 +448,9 @@ export default function Portfolio() {
                     <a href="https://www.linkedin.com/in/john-dufaye/" className="p-2 hover:-translate-y-1 justify-center items-center from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300">
                         <i className="fa-brands fa-linkedin"></i>
                     </a>
-                    <a href="https://www.instagram.com/pampa_lemouss/" className="p-2 hover:-translate-y-1 justify-center items-center from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300">
+                    {/* <a href="https://www.instagram.com/pampa_lemouss/" className="p-2 hover:-translate-y-1 justify-center items-center from-slate-400 to-slate-400 text-transparent bg-clip-text bg-gradient-to-r hover:from-firstColor hover:to-secondColor duration-300">
                         <i className="fa-brands fa-instagram"></i>
-                    </a>
+                    </a> */}
                     <div className="h-20">
                         <div className="m-auto h-full bg-slate-400 w-0.5"></div>
                     </div>
