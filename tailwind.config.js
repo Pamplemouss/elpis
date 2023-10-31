@@ -10,8 +10,8 @@ module.exports = {
         flip: '-1',
       },
       colors: {
-        'firstColor': '#3B82F6',
-        'secondColor': '#E879F9',
+        'firstColor': '#22d3ee',
+        'secondColor': '#4ade80',
         'backgroundColor': '#192236'
       },
     },

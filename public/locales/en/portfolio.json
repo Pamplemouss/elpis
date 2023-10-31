@@ -11,7 +11,9 @@
         "presentation": "Hello! My name is John Dufaye and I enjoy creating things that pop off my head. My interest in web design and software development started back in highschool when I tried to create an app to help me learn music theory — turns out it helped me learn more about programing than music!<br/><br/>Fast forward to today, I never stopped trying to give life to ideas. Being curious about several areas (such as music theory, game design, cooking, running, meditation), led me to create eclectic projects. From tabletop roleplaying online, to magic mirrors, I explored programming through many lenses.<br/><br/>Here are a few technologies I’ve been working with recently:"
     },
     "projects": {
-        "title": "Some things I’ve built"
+        "title": "Some things I’ve built",
+        "solo": "Non lucrative project",
+        "team": "Team project"
     },
     "contact": {
         "title": "Contact",

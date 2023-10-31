@@ -8,7 +8,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Trans } from 'next-i18next';
 
 import ProjectPreview from '../components/ProjectPreview';
-import { initReactI18next } from 'react-i18next';
 
 
 export async function getStaticProps({ locale }) {
@@ -97,9 +96,15 @@ export default function Portfolio() {
         },
     ];
 
-    const projectsPreviews = projects.map((project) => {
-        return <ProjectPreview key={project.name} data={project} lang={i18n.language}></ProjectPreview>
-    });
+    var projectsPreviews;
+
+    function loadProjects() {
+        projectsPreviews = projects.map((project) => {
+            return <ProjectPreview key={project.name} data={project} lang={i18n.language}></ProjectPreview>
+        });
+    }
+
+    loadProjects();
 
     useEffect(() => {
         document.addEventListener("scroll", (event) => {
@@ -194,7 +199,7 @@ export default function Portfolio() {
                         className="flex gap-4 mr-16 hidden md:flex"
                     >
                         <Link locale={`${i18n.language == "fr" ? "en" : "fr"}`} href="/portfolio" variants={item}>
-                            <motion.span variants={item} className="mr-10 m-auto text-slate-500 hover:text-slate-400 font-semibold cursor-pointer">{i18n.language == "fr" ? "EN" : "FR"}</motion.span>
+                            <motion.span onClick={() => {loadProjects()}} variants={item} className="mr-10 m-auto text-slate-500 hover:text-slate-400 font-semibold cursor-pointer">{i18n.language == "fr" ? "EN" : "FR"}</motion.span>
                         </Link>
 
                         {[{content: t("menu.about"), target: "#About"}, {content: t("menu.projects"), target: "#Projects"}, {content:t("menu.contact"), target: "#Contact"}].map((element, index) => {

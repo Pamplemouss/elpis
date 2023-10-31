@@ -1,9 +1,11 @@
 import { motion } from "framer-motion"
 import Link from 'next/link'
+import { useTranslation } from 'next-i18next'
+
 
 export default function ProjectPreview(props) {
     //const stylised = (<span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">healthier life!</span>);
-    
+    const { t, i18n } = useTranslation('portfolio', { useSuspense: false });
     const tags = props.data.tags.map((tag, index) => {
         return (
             <span key={tag + index}>{tag}</span>
@@ -19,7 +21,7 @@ export default function ProjectPreview(props) {
             viewport={{ once: true }}
         >
             <div className="w-10/12 md:w-full m-auto flex flex-col md:flex-row">
-                <div className="mt-5 md:hidden"><span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">{props.data.solo ? "Solo Project" : "Team Project"} - {props.data.year}</span></div>
+                <div className="mt-5 md:hidden"><span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">{props.data.solo ? t("projects.solo") : t("projects.team")} - {props.data.year}</span></div>
                 <div className="mb-3 md:hidden text-2xl mt-1 font-bold text-slate-300">{props.data.name}</div>
                 <div className="flex-none flex flex-col md:w-1/2 justify-center items-center">
                     <div className={`${props.data.mobile ? "w-4/12" : null} overflow-hidden align-middle rounded-xl md:hover:border-gray-700 border-4 md:border-[6px] hover:border-gray-500 border-gray-600 md:border-gray-800 shadow-xl md:shadow-[0px_0px_20px_20px_rgba(0,0,0,0.3)] md:-skew-y-6 bg-gradient-to-br from-firstColor to-secondColor hover:to-white hover:from-white duration-300`}>
@@ -37,7 +39,7 @@ export default function ProjectPreview(props) {
                     </div>
                 </div>
                 <div className="md:text-right flex flex-col grow">
-                    <div><span className="hidden md:inline-block font-medium text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">{props.data.solo ? "Solo Project" : "Team Project"} - {props.data.year}</span></div>
+                    <div><span className="hidden md:inline-block font-medium text-transparent bg-clip-text bg-gradient-to-r from-firstColor to-secondColor">{props.data.solo ? t("projects.solo") : t("projects.team")} - {props.data.year}</span></div>
                     <div className="hidden md:block text-3xl mt-1 font-bold text-slate-300">{props.data.name}</div>
                     <div className="flex md:block">
                         <div className="mt-6 mb-7 md:w-11/12 m-auto md:mx-0 md:mt-6 mb-4 md:p-6 text-sm md:bg-[rgba(255,255,255,0.05)] md:rounded md:shadow-xl text-slate-300 md:float-right"
