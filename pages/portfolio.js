@@ -29,8 +29,8 @@ export default function Portfolio() {
             name: "Eorguessr - Game App",
             year: "2023",
             description: {
-                fr:"Une version de Geoguessr adaptée pour le monde de Final Fantasy XIV. Environ 1k users/jour.",
-                en: "A Geoguessr adapted for the world of Final Fantasy XIV. About 1k users/day.",
+                fr:"Une version de Geoguessr adaptée pour le monde de Final Fantasy XIV. Plus de 100.000 utilisateurs depuis l'ouverture. Environ 150 utilisateurs quotidien.",
+                en: "A Geoguessr adapted for the world of Final Fantasy XIV. More than 100.000 users since the opening. About 150 daily users.",
             },
             tags: ["NextJS", "Typescript", "TailwindCSS", "Leaflet"],
             previewLink: "/video/eorguessr.webm",
